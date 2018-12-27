@@ -21,6 +21,14 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
+        public static FileProvide[] GetProvidedFiles()
+        {
+            lock (provideFiles)
+            {
+                return provideFiles.Values.Where(p => p.UserCount > 0).ToArray();
+            }
+        }
+
         private readonly object ioLockObj;
         private readonly List<object> users;
 
@@ -31,6 +39,8 @@ namespace NetworkVideoPlayerBackend
         public bool IsFileProvidedFinish { get; private set; }
 
         public string ID { get; private set; }
+
+        public int UserCount { get { return users.Count; } }
 
         private FileProvide(string path)
         {
@@ -85,6 +95,16 @@ namespace NetworkVideoPlayerBackend
                 users.Remove(user);
 
                 if (users.Count == 0) File.Delete(ID);
+            }
+        }
+
+        public void UnprovideForAll()
+        {
+            lock (ioLockObj)
+            {
+                users.Clear();
+
+                File.Delete(ID);
             }
         }
     }

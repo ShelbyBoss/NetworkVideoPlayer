@@ -19,6 +19,12 @@ namespace NetworkVideoPlayerBackend
         void UnprovideFile(string path);
 
         [OperationContract]
+        void UnprovideFileForAll(string path);
+
+        [OperationContract]
         string GetTime();
+
+        [OperationContract]
+        (string files, int count)[] GetProvidedFiles();
     }
 }

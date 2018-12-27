@@ -45,8 +45,6 @@ namespace NetworkVideoPlayerFrontend
         {
             //service = new FileServiceClient();
 
-            //EndpointIdentity spn = EndpointIdentity
-
             BasicHttpBinding binding = new BasicHttpBinding();
             Uri endpointUri = new Uri("http://nas-server/filewcfservice/FileService.svc");
             EndpointAddress endpoint = new EndpointAddress(endpointUri);

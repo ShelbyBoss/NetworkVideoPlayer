@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace NetworkVideoPlayerBackend
 {
@@ -29,9 +30,20 @@ namespace NetworkVideoPlayerBackend
             file.Unprovide(this);
         }
 
+        public void UnprovideFileForAll(string path)
+        {
+            FileProvide file = FileProvide.GetInstance(path);
+            file.UnprovideForAll();
+        }
+
         public string GetTime()
         {
             return DateTime.Now.ToLongTimeString();
+        }
+
+        public (string files, int count)[] GetProvidedFiles()
+        {
+            return FileProvide.GetProvidedFiles().Select(p => (p.SrcPath, p.UserCount)).ToArray();
         }
 
         ~FileService()
