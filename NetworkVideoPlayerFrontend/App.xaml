@@ -1,7 +1,7 @@
 ﻿<Application
-    x:Class="NetworkVideoPlayer.App"
+    x:Class="NetworkVideoPlayerFrontend.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:NetworkVideoPlayer">
+    xmlns:local="using:NetworkVideoPlayerFrontend">
 
 </Application>

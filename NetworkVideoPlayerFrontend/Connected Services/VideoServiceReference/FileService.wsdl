@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="FileService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IFileService_GetFiles_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFiles" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetFiles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFilesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetDirectories_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectories" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetDirectories_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectoriesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_ProvideFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:ProvideFile" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_ProvideFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ProvideFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_UnprovideFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:UnprovideFile" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_UnprovideFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnprovideFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetTime_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTime" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetTime_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTimeResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IFileService">
+    <wsdl:operation name="GetFiles">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFiles" message="tns:IFileService_GetFiles_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFilesResponse" message="tns:IFileService_GetFiles_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDirectories">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectories" message="tns:IFileService_GetDirectories_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesResponse" message="tns:IFileService_GetDirectories_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="ProvideFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/ProvideFile" message="tns:IFileService_ProvideFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/ProvideFileResponse" message="tns:IFileService_ProvideFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UnprovideFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/UnprovideFile" message="tns:IFileService_UnprovideFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/UnprovideFileResponse" message="tns:IFileService_UnprovideFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetTime" message="tns:IFileService_GetTime_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetTimeResponse" message="tns:IFileService_GetTime_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IFileService" type="tns:IFileService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetFiles">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetFiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDirectories">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetDirectories" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ProvideFile">
+      <soap:operation soapAction="http://tempuri.org/IFileService/ProvideFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnprovideFile">
+      <soap:operation soapAction="http://tempuri.org/IFileService/UnprovideFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetTime" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FileService">
+    <wsdl:port name="BasicHttpBinding_IFileService" binding="tns:BasicHttpBinding_IFileService">
+      <soap:address location="http://localhost:6428/FileService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

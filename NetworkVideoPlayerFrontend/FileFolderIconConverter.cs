@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
-namespace NetworkVideoPlayer
+namespace NetworkVideoPlayerFrontend
 {
     class FileFolderIconConverter : IValueConverter
     {
