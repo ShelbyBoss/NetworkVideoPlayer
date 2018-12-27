@@ -3,7 +3,7 @@ using System.IO;
 
 namespace NetworkVideoPlayerBackend
 {
-    public class VideoService : IVideoService
+    public class FileService : IFileService
     {
         public string[] GetFiles(string path)
         {
@@ -34,7 +34,7 @@ namespace NetworkVideoPlayerBackend
             return DateTime.Now.ToLongTimeString();
         }
 
-        ~VideoService()
+        ~FileService()
         {
             FileProvide.UnprovideForAll(this);
         }

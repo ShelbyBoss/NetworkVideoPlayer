@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="NetworkVideoPlayerBackend.VideoService" CodeBehind="VideoService.svc.cs" %>
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="NetworkVideoPlayerBackend.FileService" CodeBehind="VideoService.svc.cs" %>
