@@ -1,9 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" 
-         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" 
-         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
-         xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
-         IgnorableNamespaces="uap mp uap5 rescap">
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap5 rescap">
   <Identity Name="07f105f1-ae2e-4980-b0c6-69d019031578" Publisher="CN=Clemens" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="07f105f1-ae2e-4980-b0c6-69d019031578" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
@@ -41,9 +37,5 @@
     <Capability Name="internetClientServer" />
     <Capability Name="privateNetworkClientServer" />
     <uap:Capability Name="enterpriseAuthentication" />
-    <uap:Capability Name="videosLibrary" />
-    <uap:Capability Name="removableStorage" />
-    <uap:Capability Name="musicLibrary" />
-    <uap:Capability Name="picturesLibrary" />
   </Capabilities>
 </Package>

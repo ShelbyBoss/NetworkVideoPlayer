@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="77c99cbf-8260-4b6a-8e98-74d57e1442e6" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.ObservableCollection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:6428/VideoService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="VideoService.wsdl" MetadataType="Wsdl" ID="d719db2a-3d93-4f02-abdf-a4f66cabf5d3" SourceId="1" SourceUrl="http://localhost:6428/VideoService.svc?wsdl" />
+    <MetadataFile FileName="VideoService.xsd" MetadataType="Schema" ID="03486bde-baf6-4fc1-acf6-5856be81f8db" SourceId="1" SourceUrl="http://localhost:6428/VideoService.svc?xsd=xsd2" />
+    <MetadataFile FileName="VideoService.disco" MetadataType="Disco" ID="3a96831f-00c1-433f-ac26-4135091f87bf" SourceId="1" SourceUrl="http://localhost:6428/VideoService.svc?disco" />
+    <MetadataFile FileName="VideoService1.xsd" MetadataType="Schema" ID="8b80d222-7ee3-470d-bbf4-2b119c43ef4d" SourceId="1" SourceUrl="http://localhost:6428/VideoService.svc?xsd=xsd0" />
+    <MetadataFile FileName="VideoService2.xsd" MetadataType="Schema" ID="1e3697b6-28c4-4129-baaa-b0e5229798c9" SourceId="1" SourceUrl="http://localhost:6428/VideoService.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

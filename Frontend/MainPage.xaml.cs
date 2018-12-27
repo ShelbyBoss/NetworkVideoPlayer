@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NetworkVideoPlayer.VideoServiceReference;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.UI;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -29,21 +24,21 @@ namespace NetworkVideoPlayer
         private const string pathFilename = "path.txt";
         private static readonly Brush errorPathForeground = new SolidColorBrush(Colors.Red);
 
-        private StorageFolder folder;
         private readonly Brush defaultPathForeground;
+        private VideoServiceClient service;
+        private string directoryPath;
 
-        private StorageFolder Folder
+        private string DirectoryPath
         {
-            get { return folder; }
+            get { return directoryPath; }
             set
             {
-                if (value?.Path == folder?.Path) return;
+                if (value == directoryPath) return;
 
-                folder = value;
-                tblPath.Text = folder?.Path ?? string.Empty;
+                directoryPath = value;
+                tblPath.Text = directoryPath;
 
-                UpdateFiles();
-                //SaveCurrentFolderPath();
+                UpdateStorageItems();
             }
         }
 
@@ -52,41 +47,52 @@ namespace NetworkVideoPlayer
             this.InitializeComponent();
 
             defaultPathForeground = tblPath.Foreground;
-
-            System.Net.CredentialCache.DefaultNetworkCredentials.Domain = "Server";
-            System.Net.CredentialCache.DefaultNetworkCredentials.UserName = "Server";
-            System.Net.CredentialCache.DefaultNetworkCredentials.Password = "product1";
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            service = e.Parameter as VideoServiceClient;
+
+            await service.OpenAsync();
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(await service.GetTimeAsync());
+            }
+            catch (Exception exc)
+            {
+                MessageDialog dialog = new MessageDialog(exc.Message);
+                await dialog.ShowAsync();
+            }
+
             try
             {
                 StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(pathFilename);
-                string path = await FileIO.ReadTextAsync(file);
-
-                Folder = await StorageFolder.GetFolderFromPathAsync(@"\\Nas-server\2tb\Tmp");
+                DirectoryPath = await FileIO.ReadTextAsync(file);
             }
             catch
             {
-                Folder = KnownFolders.VideosLibrary;
+                DirectoryPath = @"D:\Clemens\Videos\Filme & Serien";
             }
         }
 
-        private async void UpdateFiles()
+        private async void UpdateStorageItems()
         {
-            if (Folder == null)
+            try
             {
-                lbxFolderContent.ItemsSource = Enumerable.Empty<IStorageItem>();
-                return;
+                var dirsTask = service.GetDirectoriesAsync(DirectoryPath);
+                var filesTask = service.GetFilesAsync(DirectoryPath);
+                StorageItem[] folders = (await dirsTask).Select(p => StorageItem.GetDirectory(p)).ToArray();
+                StorageItem[] files = (await filesTask).Select(p => StorageItem.GetFile(p)).ToArray();
+
+                lbxFolderContent.ItemsSource = folders.Concat(files);
             }
+            catch (Exception e)
+            {
+                lbxFolderContent.ItemsSource = Enumerable.Empty<StorageItem>();
 
-            var foldersTask = Folder.GetFoldersAsync();
-            var filesTask = Folder.GetFilesAsync();
-            IReadOnlyList<StorageFolder> folders = await foldersTask;
-            IReadOnlyList<StorageFile> files = await filesTask;
-
-            lbxFolderContent.ItemsSource = folders.Cast<IStorageItem>().Concat(files);
+                MessageDialog dialog = new MessageDialog(e.Message);
+                await dialog.ShowAsync();
+            }
         }
 
         private async void SaveCurrentFolderPath()
@@ -115,7 +121,7 @@ namespace NetworkVideoPlayer
 
             try
             {
-                await FileIO.WriteTextAsync(file, Folder?.Path ?? string.Empty);
+                await FileIO.WriteTextAsync(file, DirectoryPath);
             }
             catch { }
         }
@@ -134,26 +140,19 @@ namespace NetworkVideoPlayer
         //    if (file != null) Frame.Navigate(typeof(VideoPage), file);
         //}
 
-        private async void BtnToParent_Click(object sender, RoutedEventArgs e)
+        private void BtnToParent_Click(object sender, RoutedEventArgs e)
         {
-            //Folder = await Folder.GetParentAsync();
+            int index = DirectoryPath.LastIndexOf('\\');
 
-            FileOpenPicker picker = new FileOpenPicker();
-            picker.ViewMode = PickerViewMode.List;
-            picker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
-            picker.FileTypeFilter.Add(".mp4");
-            picker.FileTypeFilter.Add(".avi");
-            picker.FileTypeFilter.Add(".mkv");
-
-            StorageFile file = await picker.PickSingleFileAsync();
+            if (index > 0) DirectoryPath = DirectoryPath.Remove(index + 1);
         }
 
         private void StackPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            IStorageItem item = (IStorageItem)((FrameworkElement)sender).DataContext;
+            StorageItem item = (StorageItem)((FrameworkElement)sender).DataContext;
 
-            if (item is StorageFolder) Folder = (StorageFolder)item;
-            else if (item is StorageFile) Frame.Navigate(typeof(VideoPage), item);
+            if (item.IsDirectory) DirectoryPath = item.Path;
+            else if (item.IsFile) Frame.Navigate(typeof(VideoPage), item);
         }
     }
 }
