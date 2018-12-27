@@ -8,42 +8,100 @@ namespace NetworkVideoPlayerBackend
     {
         public string[] GetFiles(string path)
         {
-            return Directory.GetFiles(path);
+            try
+            {
+                return Directory.GetFiles(path);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
         }
 
         public string[] GetDirectories(string path)
         {
-            return Directory.GetDirectories(path);
+            try
+            {
+                return Directory.GetDirectories(path);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
         }
 
         public string ProvideFile(string path)
         {
-            FileProvide file = FileProvide.GetInstance(path);
-            file.Provide(this);
+            try
+            {
+                FileProvide file = FileProvide.GetInstance(path);
+                file.Provide(this);
 
-            return file.ID;
+                return file.ID;
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
         }
 
         public void UnprovideFile(string path)
         {
-            FileProvide file = FileProvide.GetInstance(path);
-            file.Unprovide(this);
+            try
+            {
+                FileProvide file = FileProvide.GetInstance(path);
+                file.Unprovide(this);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
         }
 
         public void UnprovideFileForAll(string path)
         {
-            FileProvide file = FileProvide.GetInstance(path);
-            file.UnprovideForAll();
+            try
+            {
+                FileProvide file = FileProvide.GetInstance(path);
+                file.UnprovideForAll();
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
         }
 
         public string GetTime()
         {
+            return AppDomain.CurrentDomain.BaseDirectory;
             return DateTime.Now.ToLongTimeString();
         }
 
         public (string files, int count)[] GetProvidedFiles()
         {
-            return FileProvide.GetProvidedFiles().Select(p => (p.SrcPath, p.UserCount)).ToArray();
+            try
+            {
+                return FileProvide.GetProvidedFiles().Select(p => (p.SrcPath, p.UserCount)).ToArray();
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
+        }
+
+        public static void Log(string text)
+        {
+            try
+            {
+                File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service.log"), text + "\r\n");
+            }
+            catch { }
         }
 
         ~FileService()

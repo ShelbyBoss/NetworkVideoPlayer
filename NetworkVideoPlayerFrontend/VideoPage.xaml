@@ -9,6 +9,43 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <TextBlock x:Name="tblName" Margin="4"/>
+        </Grid>
+
+        <MediaPlayerElement Grid.Row="1" x:Name="mpe"
+                            VerticalAlignment="Center" DoubleTapped="Mpe_DoubleTapped"/>
+
+        <Grid Grid.Row="2" Margin="2" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Margin="2" Width="50" Click="BtnBack_Click">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+
+            <Button Grid.Column="1" Margin="2" Width="50" Click="BtnPlayPause_Click">
+                <SymbolIcon Symbol="Play" x:Name="sbiPlayPause"/>
+            </Button>
+
+            <TextBlock Grid.Column="2" x:Name="tblPosition" Margin="2" VerticalAlignment="Center"/>
+            <Slider Grid.Column="3" x:Name="sldPosition" Margin="2,10,2,2"
+                    VerticalAlignment="Center" ValueChanged="SldPosition_ValueChanged">
+                
+            </Slider>
+            <TextBlock Grid.Column="4" x:Name="tblDuration" Margin="2" VerticalAlignment="Center"/>
+        </Grid>
 
     </Grid>
 </Page>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -36,7 +37,7 @@ namespace NetworkVideoPlayerBackend
 
         public bool IsProvidingFile { get; private set; }
 
-        public bool IsFileProvidedFinish { get; private set; }
+        public bool IsFileProvided { get; private set; }
 
         public string ID { get; private set; }
 
@@ -54,14 +55,24 @@ namespace NetworkVideoPlayerBackend
         {
             lock (ioLockObj)
             {
-                if (!users.Contains(user)) users.Add(user);
+                users.Add(user);
 
-                if (IsFileProvidedFinish) return;
+                if (IsFileProvided) return;
 
                 if (string.IsNullOrWhiteSpace(ID)) ID = GetID(Path.GetExtension(SrcPath));
 
-                File.Copy(SrcPath, ID);
+                IsProvidingFile = true;
+
+                File.Copy(SrcPath, GetIdPath());
+
+                IsFileProvided = true;
+                IsProvidingFile = false;
             }
+        }
+
+        private string GetIdPath()
+        {
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ID);
         }
 
         private static string GetID(string extension)
@@ -94,7 +105,11 @@ namespace NetworkVideoPlayerBackend
             {
                 users.Remove(user);
 
-                if (users.Count == 0) File.Delete(ID);
+                if (users.Count == 0)
+                {
+                    IsFileProvided = false;
+                    File.Delete(GetIdPath());
+                }
             }
         }
 
@@ -103,8 +118,8 @@ namespace NetworkVideoPlayerBackend
             lock (ioLockObj)
             {
                 users.Clear();
-
-                File.Delete(ID);
+                IsFileProvided = false;
+                File.Delete(GetIdPath());
             }
         }
     }

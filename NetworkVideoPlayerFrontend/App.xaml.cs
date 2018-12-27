@@ -24,7 +24,10 @@ namespace NetworkVideoPlayerFrontend
     /// </summary>
     sealed partial class App : Application
     {
-        private FileServiceClient service;
+        public static string ServerAddress = "http://nas-server/filewcfservice/";
+        private const string serviceName = "FileService.svc";
+
+        public FileServiceClient Service { get; private set; }
 
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt. Dies ist die erste Zeile von erstelltem Code
@@ -41,14 +44,17 @@ namespace NetworkVideoPlayerFrontend
         /// werden z. B. verwendet, wenn die Anwendung gestartet wird, um eine bestimmte Datei zu öffnen.
         /// </summary>
         /// <param name="e">Details über Startanforderung und -prozess.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
             //service = new FileServiceClient();
+            //ServerAddress = service.Endpoint.Address.Uri.AbsoluteUri.Remove(22);
 
             BasicHttpBinding binding = new BasicHttpBinding();
-            Uri endpointUri = new Uri("http://nas-server/filewcfservice/FileService.svc");
+            Uri endpointUri = new Uri(ServerAddress + serviceName);
             EndpointAddress endpoint = new EndpointAddress(endpointUri);
-            service = new FileServiceClient(binding, endpoint);
+            Service = new FileServiceClient(binding, endpoint);
+
+            await Service.OpenAsync();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -74,7 +80,7 @@ namespace NetworkVideoPlayerFrontend
             {
                 if (rootFrame.Content == null)
                 {
-                    rootFrame.Navigate(typeof(MainPage), service);
+                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist
                 Window.Current.Activate();
@@ -102,7 +108,7 @@ namespace NetworkVideoPlayerFrontend
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            service?.CloseAsync();
+            Service?.CloseAsync();
 
             deferral.Complete();
         }
