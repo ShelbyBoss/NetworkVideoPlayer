@@ -31,7 +31,6 @@ namespace NetworkVideoPlayerBackend
         }
 
         private readonly object ioLockObj;
-        private readonly List<object> users;
 
         public string SrcPath { get; private set; }
 
@@ -41,12 +40,12 @@ namespace NetworkVideoPlayerBackend
 
         public string ID { get; private set; }
 
-        public int UserCount { get { return users.Count; } }
+        public int UserCount { get; private set; }
 
         private FileProvide(string path)
         {
             ioLockObj = new object();
-            users = new List<object>();
+            UserCount = 0;
 
             SrcPath = path;
         }
@@ -55,7 +54,7 @@ namespace NetworkVideoPlayerBackend
         {
             lock (ioLockObj)
             {
-                users.Add(user);
+                UserCount++;
 
                 if (IsFileProvided) return;
 
@@ -103,9 +102,9 @@ namespace NetworkVideoPlayerBackend
         {
             lock (ioLockObj)
             {
-                users.Remove(user);
+                UserCount--;
 
-                if (users.Count == 0)
+                if (UserCount == 0)
                 {
                     IsFileProvided = false;
                     File.Delete(GetIdPath());
@@ -117,7 +116,7 @@ namespace NetworkVideoPlayerBackend
         {
             lock (ioLockObj)
             {
-                users.Clear();
+                UserCount = 0;
                 IsFileProvided = false;
                 File.Delete(GetIdPath());
             }

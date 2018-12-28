@@ -6,6 +6,11 @@ namespace NetworkVideoPlayerBackend
 {
     public class FileService : IFileService
     {
+        public FileService()
+        {
+            Log("FileServiceCtor: " + DateTime.Now.ToLongTimeString());
+        }
+
         public string[] GetFiles(string path)
         {
             try
