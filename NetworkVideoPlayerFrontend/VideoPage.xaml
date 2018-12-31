@@ -6,23 +6,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded"
+    Unloaded="Page_Unloaded"
+    SizeChanged="Page_SizeChanged">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-            <TextBlock x:Name="tblName" Margin="4"/>
-        </Grid>
+        <MediaPlayerElement Grid.Row="0" x:Name="mpe" DoubleTapped="Mpe_DoubleTapped"/>
+        <ProgressRing Grid.Row="0" x:Name="rpb" IsActive="True"/>
 
-        <MediaPlayerElement Grid.Row="1" x:Name="mpe"
-                            VerticalAlignment="Center" DoubleTapped="Mpe_DoubleTapped"/>
-
-        <Grid Grid.Row="2" Margin="2" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Grid.Row="1" Margin="2" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -39,13 +37,12 @@
                 <SymbolIcon Symbol="Play" x:Name="sbiPlayPause"/>
             </Button>
 
-            <TextBlock Grid.Column="2" x:Name="tblPosition" Margin="2" VerticalAlignment="Center"/>
-            <Slider Grid.Column="3" x:Name="sldPosition" Margin="2,10,2,2"
+            <TextBlock Grid.Column="2" x:Name="tblPosition" Margin="2,0" VerticalAlignment="Center"/>
+            <Slider Grid.Column="3" x:Name="sldPosition" Margin="2,0,2,-8"
                     VerticalAlignment="Center" ValueChanged="SldPosition_ValueChanged">
-                
-            </Slider>
-            <TextBlock Grid.Column="4" x:Name="tblDuration" Margin="2" VerticalAlignment="Center"/>
-        </Grid>
 
+            </Slider>
+            <TextBlock Grid.Column="4" x:Name="tblDuration" Margin="2,0" VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </Page>

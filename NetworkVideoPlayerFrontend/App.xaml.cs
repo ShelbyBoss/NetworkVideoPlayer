@@ -1,20 +1,13 @@
 ﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.ServiceModel;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace NetworkVideoPlayerFrontend
@@ -27,6 +20,8 @@ namespace NetworkVideoPlayerFrontend
         public static string ServerAddress = "http://nas-server/filewcfservice/";
         private const string serviceName = "FileService.svc";
 
+        private List<string> providedFiles;
+
         public FileServiceClient Service { get; private set; }
 
         /// <summary>
@@ -36,7 +31,15 @@ namespace NetworkVideoPlayerFrontend
         public App()
         {
             this.InitializeComponent();
+            this.Resuming += OnResuming;
             this.Suspending += OnSuspending;
+
+            providedFiles = new List<string>();
+        }
+
+        private async void OnResuming(object sender, object e)
+        {
+            await Service.OpenAsync();
         }
 
         /// <summary>
@@ -104,13 +107,30 @@ namespace NetworkVideoPlayerFrontend
         /// </summary>
         /// <param name="sender">Die Quelle der Anhalteanforderung.</param>
         /// <param name="e">Details zur Anhalteanforderung.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            foreach (string file in providedFiles.ToArray())
+            {
+                await UnprovideFileAsync(file);
+            }
 
             Service?.CloseAsync();
 
             deferral.Complete();
+        }
+
+        public async Task<string> ProvideFileAsync(string path)
+        {
+            providedFiles.Add(path);
+            return await Service.ProvideFileAsync(path);
+        }
+
+        public async Task UnprovideFileAsync(string path)
+        {
+            providedFiles.Remove(path);
+            await Service.UnprovideFileAsync(path);
         }
     }
 }

@@ -6,35 +6,64 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    SizeChanged="Page_SizeChanged">
 
     <Page.Resources>
         <local:FileFolderIconConverter x:Key="symCon"/>
     </Page.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button Content="Ordner hoch" VerticalAlignment="Center" Margin="5" Click="BtnToParent_Click"/>
-        <TextBlock Grid.Column="1" Name="tblPath" VerticalAlignment="Center" Margin="5"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <ListBox Grid.ColumnSpan="2" Grid.Row="1" Name="lbxFolderContent" SelectionMode="Single">
+            <Button VerticalAlignment="Center" Margin="5" Click="BtnToParent_Click">
+                <SymbolIcon Symbol="Up"/>
+            </Button>
+
+            <TextBlock Grid.Column="1" Name="tblPath" VerticalAlignment="Center"
+                       Margin="5" DoubleTapped="TblPath_DoubleTapped"/>
+            <TextBox Grid.Column="1" Name="tbxPath" VerticalAlignment="Center" 
+                     Margin="5" Visibility="Collapsed"
+                     TextChanged="TbxPath_TextChanged" KeyDown="TbxPath_KeyDown"/>
+
+            <Button Grid.Column="2" Name="btnError" Margin="5"
+                    Visibility="Collapsed" Click="BtnError_Click">
+                <SymbolIcon Symbol="Help"/>
+            </Button>
+            
+            <Button Grid.Column="3" Margin="5" Click="BtnSavePath_Click">
+                <SymbolIcon Symbol="Save"/>
+            </Button>
+        </Grid>
+
+        <ListBox Grid.Row="1" Name="lbxFolderContent" SelectionMode="Single"
+                 SelectionChanged="LbxFolderContent_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" DoubleTapped="StackPanel_DoubleTapped">
+                    <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="{Binding Converter={StaticResource symCon}}" Margin="0,0,5,0"/>
                         <TextBlock Text="{Binding Name}" TextWrapping="Wrap"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
         </ListBox>
+
+        <ProgressRing Grid.ColumnSpan="2" Grid.Row="1" x:Name="rpb" IsActive="False" VerticalAlignment="Center"/>
     </Grid>
 </Page>

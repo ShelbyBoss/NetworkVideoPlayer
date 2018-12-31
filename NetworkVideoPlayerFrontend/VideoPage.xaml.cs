@@ -1,8 +1,12 @@
-﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
-using System;
+﻿using System;
+using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -16,21 +20,27 @@ namespace NetworkVideoPlayerFrontend
     /// </summary>
     public sealed partial class VideoPage : Page
     {
-        private bool isUpdatingPosition;
+        private static readonly TimeSpan removeUiWaitTime = TimeSpan.FromSeconds(3);
+
+        private bool isUpdatingPosition, unloadMedia, loadMedia;
         private StorageItem item;
-        private FileServiceClient service;
+        private DateTime lastWaitStarted;
+        private App app;
 
         public VideoPage()
         {
             this.InitializeComponent();
 
-            service = ((App)Application.Current).Service;
+            app = (App)Application.Current;
         }
 
         private async void PlaybackSession_PlaybackStateChanged(MediaPlaybackSession sender, object args)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () => sbiPlayPause.Symbol = sender.PlaybackState == MediaPlaybackState.Playing ? Symbol.Pause : Symbol.Play);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                sbiPlayPause.Symbol = sender.PlaybackState == MediaPlaybackState.Playing ? Symbol.Pause : Symbol.Play;
+                rpb.IsActive = false;
+            });
         }
 
         private async void PlaybackSession_PositionChangedAsync(MediaPlaybackSession sender, object args)
@@ -60,38 +70,29 @@ namespace NetworkVideoPlayerFrontend
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Frame.GoBack());
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        private async void MediaPlayer_MediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => Frame.GoBack());
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            rpb.Width = ActualWidth / 10;
+            rpb.Height = ActualHeight / 10;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             item = (StorageItem)e.Parameter;
-            tblName.Text = item.Name;
 
-            string id = await service.ProvideFileAsync(item.Path);
-            System.Diagnostics.Debug.WriteLine(id);
-
-            Uri uri = new Uri(App.ServerAddress + id);
-
-            mpe.Source = MediaSource.CreateFromUri(uri);
-
-            mpe.MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
-
-            mpe.MediaPlayer.PlaybackSession.PlaybackStateChanged += PlaybackSession_PlaybackStateChanged;
-            mpe.MediaPlayer.PlaybackSession.PositionChanged += PlaybackSession_PositionChangedAsync;
-            mpe.MediaPlayer.PlaybackSession.NaturalDurationChanged += PlaybackSession_NaturalDurationChanged;
-
-            mpe.MediaPlayer.Play();
+            ApplicationView.GetForCurrentView().Title = item.Name;
         }
 
         protected async override void OnNavigatingFrom(NavigatingCancelEventArgs args)
         {
-            mpe.MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
+            ExitFullscreenMode();
 
-            mpe.MediaPlayer.PlaybackSession.PlaybackStateChanged -= PlaybackSession_PlaybackStateChanged;
-            mpe.MediaPlayer.PlaybackSession.PositionChanged -= PlaybackSession_PositionChangedAsync;
-            mpe.MediaPlayer.PlaybackSession.NaturalDurationChanged -= PlaybackSession_NaturalDurationChanged;
-
-            mpe.Source = null;
-
-            await service.UnprovideFileAsync(item.Path);
+            await UnloadMedia();
         }
 
         public static string ConvertToString(TimeSpan span, bool includeMillis = false)
@@ -110,7 +111,7 @@ namespace NetworkVideoPlayerFrontend
 
         private void Mpe_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-
+            ToggleFullscreenMode();
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -120,8 +121,7 @@ namespace NetworkVideoPlayerFrontend
 
         private void BtnPlayPause_Click(object sender, RoutedEventArgs e)
         {
-            if (mpe.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Playing) mpe.MediaPlayer.Pause();
-            else mpe.MediaPlayer.Play();
+            TogglePlayState();
         }
 
         private void SldPosition_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -131,6 +131,178 @@ namespace NetworkVideoPlayerFrontend
             isUpdatingPosition = true;
             mpe.MediaPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(e.NewValue);
             isUpdatingPosition = false;
+
+            TryRemoveUI();
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            await LoadMedia();
+
+            Application.Current.Resuming += Application_Resuming;
+            Application.Current.Suspending += Application_Suspending;
+
+            Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
+            Window.Current.CoreWindow.PointerMoved += CoreWindow_PointerAction;
+            Window.Current.CoreWindow.PointerPressed += CoreWindow_PointerAction;
+            Window.Current.CoreWindow.PointerReleased += CoreWindow_PointerAction;
+        }
+
+        private async void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            await UnloadMedia();
+
+            Application.Current.Resuming -= Application_Resuming;
+            Application.Current.Suspending -= Application_Suspending;
+
+            Window.Current.CoreWindow.KeyDown -= CoreWindow_KeyDown;
+            Window.Current.CoreWindow.PointerMoved -= CoreWindow_PointerAction;
+            Window.Current.CoreWindow.PointerPressed -= CoreWindow_PointerAction;
+            Window.Current.CoreWindow.PointerReleased -= CoreWindow_PointerAction;
+        }
+
+        private async void Application_Resuming(object sender, object e)
+        {
+            await LoadMedia();
+        }
+
+        private void Application_Suspending(object sender, SuspendingEventArgs e)
+        {
+            loadMedia = false;
+            unloadMedia = true;
+        }
+
+        private void CoreWindow_PointerAction(CoreWindow sender, PointerEventArgs e)
+        {
+            ViewUI();
+        }
+
+        private void TogglePlayState()
+        {
+            if (mpe.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Playing) mpe.MediaPlayer.Pause();
+            else mpe.MediaPlayer.Play();
+        }
+
+        private void ToggleFullscreenMode()
+        {
+            ApplicationView view = ApplicationView.GetForCurrentView();
+
+            if (view.IsFullScreenMode)
+            {
+                view.ExitFullScreenMode();
+                mpe.IsFullWindow = false;
+            }
+            else
+            {
+                view.TryEnterFullScreenMode();
+                TryRemoveUI();
+            }
+        }
+
+        private void ExitFullscreenMode()
+        {
+            ApplicationView.GetForCurrentView().ExitFullScreenMode();
+            mpe.IsFullWindow = false;
+        }
+
+        private async void TryRemoveUI()
+        {
+            ApplicationView view = ApplicationView.GetForCurrentView();
+            if (!view.IsFullScreenMode) return;
+
+            lastWaitStarted = DateTime.Now;
+
+            await Task.Delay(removeUiWaitTime);
+
+            if (!view.IsFullScreenMode || lastWaitStarted + removeUiWaitTime > DateTime.Now) return;
+
+            mpe.IsFullWindow = true;
+        }
+
+        private void ViewUI()
+        {
+            mpe.IsFullWindow = false;
+
+            TryRemoveUI();
+        }
+
+        private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            switch (args.VirtualKey)
+            {
+                case VirtualKey.F:
+                    ToggleFullscreenMode();
+                    break;
+
+                case VirtualKey.Escape:
+                    ExitFullscreenMode();
+                    break;
+
+                case VirtualKey.Space:
+                    TogglePlayState();
+                    break;
+            }
+        }
+
+        private async Task LoadMedia()
+        {
+            try
+            {
+                if (loadMedia) return;
+
+                loadMedia = true;
+                unloadMedia = false;
+
+                string id = await app.ProvideFileAsync(item.Path);
+                System.Diagnostics.Debug.WriteLine(id);
+
+                if (unloadMedia) return;
+
+                Uri uri = new Uri(App.ServerAddress + id);
+
+                if (mpe.MediaPlayer == null) mpe.SetMediaPlayer(new MediaPlayer());
+
+                mpe.MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+                mpe.MediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
+
+                mpe.Source = MediaSource.CreateFromUri(uri);
+
+                if (mpe.MediaPlayer?.PlaybackSession != null)
+                {
+                    mpe.MediaPlayer.PlaybackSession.PlaybackStateChanged += PlaybackSession_PlaybackStateChanged;
+                    mpe.MediaPlayer.PlaybackSession.PositionChanged += PlaybackSession_PositionChangedAsync;
+                    mpe.MediaPlayer.PlaybackSession.NaturalDurationChanged += PlaybackSession_NaturalDurationChanged;
+                }
+
+                mpe.MediaPlayer.Play();
+            }
+            catch (Exception exc)
+            {
+                await new MessageDialog(exc.Message).ShowAsync();
+                Frame.GoBack();
+            }
+        }
+
+        private async Task UnloadMedia()
+        {
+            System.Diagnostics.Debug.WriteLine("UnloadMedia: " + unloadMedia);
+            if (unloadMedia) return;
+
+            unloadMedia = true;
+            loadMedia = false;
+
+            if (mpe.MediaPlayer != null) mpe.MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
+
+            if (mpe.MediaPlayer?.PlaybackSession != null)
+            {
+                mpe.MediaPlayer.PlaybackSession.PlaybackStateChanged -= PlaybackSession_PlaybackStateChanged;
+                mpe.MediaPlayer.PlaybackSession.PositionChanged -= PlaybackSession_PositionChangedAsync;
+                mpe.MediaPlayer.PlaybackSession.NaturalDurationChanged -= PlaybackSession_NaturalDurationChanged;
+            }
+
+            mpe.Source = null;
+
+            await app.UnprovideFileAsync(item.Path);
         }
     }
 }
