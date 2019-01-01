@@ -11,6 +11,10 @@
     Unloaded="Page_Unloaded"
     SizeChanged="Page_SizeChanged">
 
+    <Page.Resources>
+        <local:TimeSpanToSecondsConverter x:Key="timeCon"/>
+    </Page.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -39,9 +43,8 @@
 
             <TextBlock Grid.Column="2" x:Name="tblPosition" Margin="2,0" VerticalAlignment="Center"/>
             <Slider Grid.Column="3" x:Name="sldPosition" Margin="2,0,2,-8"
-                    VerticalAlignment="Center" ValueChanged="SldPosition_ValueChanged">
-
-            </Slider>
+                    ThumbToolTipValueConverter="{StaticResource timeCon}"
+                    VerticalAlignment="Center" ValueChanged="SldPosition_ValueChanged"/>
             <TextBlock Grid.Column="4" x:Name="tblDuration" Margin="2,0" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
