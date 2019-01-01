@@ -1,10 +1,12 @@
 ﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -39,7 +41,32 @@ namespace NetworkVideoPlayerFrontend
 
         private async void OnResuming(object sender, object e)
         {
-            await Service.OpenAsync();
+            Debug.WriteLine("App_OnResume1");
+
+            Service = CreateService();
+
+            try
+            {
+                await Service.OpenAsync();
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine("App_OnResumeFail1: " + exc);
+            }
+
+            try
+            {
+                foreach (string file in providedFiles)
+                {
+                    await Service.ProvideFileAsync(file);
+                }
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine("App_OnResumeFail2: " + exc);
+            }
+
+            Debug.WriteLine("App_OnResume2");
         }
 
         /// <summary>
@@ -49,15 +76,11 @@ namespace NetworkVideoPlayerFrontend
         /// <param name="e">Details über Startanforderung und -prozess.</param>
         protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            //service = new FileServiceClient();
-            //ServerAddress = service.Endpoint.Address.Uri.AbsoluteUri.Remove(22);
-
-            BasicHttpBinding binding = new BasicHttpBinding();
-            Uri endpointUri = new Uri(ServerAddress + serviceName);
-            EndpointAddress endpoint = new EndpointAddress(endpointUri);
-            Service = new FileServiceClient(binding, endpoint);
+            Service = CreateService();
 
             await Service.OpenAsync();
+
+            Debug.Clear();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -111,18 +134,55 @@ namespace NetworkVideoPlayerFrontend
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            foreach (string file in providedFiles.ToArray())
+            foreach (string file in providedFiles)
             {
-                await UnprovideFileAsync(file);
+                await Service.UnprovideFileAsync(file);
             }
 
-            Service?.CloseAsync();
+            await Service?.CloseAsync();
 
             deferral.Complete();
         }
 
+        private FileServiceClient CreateService()
+        {
+            //service = new FileServiceClient();
+            //ServerAddress = service.Endpoint.Address.Uri.AbsoluteUri.Remove(22);
+
+            BasicHttpBinding binding = new BasicHttpBinding();
+            Uri endpointUri = new Uri(ServerAddress + serviceName);
+            EndpointAddress endpoint = new EndpointAddress(endpointUri);
+
+            return new FileServiceClient(binding, endpoint);
+        }
+
         public async Task<string> ProvideFileAsync(string path)
         {
+            //switch (Service.State)
+            //{
+            //    case CommunicationState.Closed:
+            //        await Service.OpenAsync();
+            //        break;
+
+            //    case CommunicationState.Closing:
+            //        while (Service.State == CommunicationState.Closing) await Task.Delay(100);
+            //        await Service.OpenAsync();
+            //        break;
+
+            //    case CommunicationState.Created:
+            //        await Service.OpenAsync();
+            //        break;
+
+            //    case CommunicationState.Faulted:
+            //        await Service.CloseAsync();
+            //        await Service.OpenAsync();
+            //        break;
+
+            //    case CommunicationState.Opening:
+            //        while (Service.State == CommunicationState.Opening) await Task.Delay(100);
+            //        break;
+            //}
+
             providedFiles.Add(path);
             return await Service.ProvideFileAsync(path);
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using Windows.System;
@@ -81,8 +80,9 @@ namespace NetworkVideoPlayerFrontend
             rpb.Height = ActualHeight / 10;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            Debug.WriteLine("NaviTo");
             item = (StorageItem)e.Parameter;
 
             ApplicationView.GetForCurrentView().Title = item.Name;
@@ -90,6 +90,7 @@ namespace NetworkVideoPlayerFrontend
 
         protected async override void OnNavigatingFrom(NavigatingCancelEventArgs args)
         {
+            Debug.WriteLine("NaviFrom");
             ExitFullscreenMode();
 
             await UnloadMedia();
@@ -137,39 +138,28 @@ namespace NetworkVideoPlayerFrontend
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await LoadMedia();
+            Debug.WriteLine("Loaded1");
 
-            Application.Current.Resuming += Application_Resuming;
-            Application.Current.Suspending += Application_Suspending;
+            await LoadMedia();
 
             Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
             Window.Current.CoreWindow.PointerMoved += CoreWindow_PointerAction;
             Window.Current.CoreWindow.PointerPressed += CoreWindow_PointerAction;
             Window.Current.CoreWindow.PointerReleased += CoreWindow_PointerAction;
+
+            Debug.WriteLine("Loaded2");
         }
 
         private async void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            Debug.WriteLine("Unloaded1");
             await UnloadMedia();
-
-            Application.Current.Resuming -= Application_Resuming;
-            Application.Current.Suspending -= Application_Suspending;
 
             Window.Current.CoreWindow.KeyDown -= CoreWindow_KeyDown;
             Window.Current.CoreWindow.PointerMoved -= CoreWindow_PointerAction;
             Window.Current.CoreWindow.PointerPressed -= CoreWindow_PointerAction;
             Window.Current.CoreWindow.PointerReleased -= CoreWindow_PointerAction;
-        }
-
-        private async void Application_Resuming(object sender, object e)
-        {
-            await LoadMedia();
-        }
-
-        private void Application_Suspending(object sender, SuspendingEventArgs e)
-        {
-            loadMedia = false;
-            unloadMedia = true;
+            Debug.WriteLine("Unloaded2");
         }
 
         private void CoreWindow_PointerAction(CoreWindow sender, PointerEventArgs e)
@@ -248,6 +238,8 @@ namespace NetworkVideoPlayerFrontend
         {
             try
             {
+                Debug.WriteLine("LoadMedia: " + loadMedia);
+
                 if (loadMedia) return;
 
                 loadMedia = true;
@@ -278,6 +270,7 @@ namespace NetworkVideoPlayerFrontend
             }
             catch (Exception exc)
             {
+                Debug.WriteLine("LoedMediaFail: \r\n" + exc);
                 await new MessageDialog(exc.Message).ShowAsync();
                 Frame.GoBack();
             }
@@ -285,7 +278,7 @@ namespace NetworkVideoPlayerFrontend
 
         private async Task UnloadMedia()
         {
-            System.Diagnostics.Debug.WriteLine("UnloadMedia: " + unloadMedia);
+            Debug.WriteLine("UnloadMedia: " + unloadMedia);
             if (unloadMedia) return;
 
             unloadMedia = true;

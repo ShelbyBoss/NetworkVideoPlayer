@@ -32,7 +32,7 @@
             </Button>
 
             <TextBlock Grid.Column="1" Name="tblPath" VerticalAlignment="Center"
-                       Margin="5" DoubleTapped="TblPath_DoubleTapped"/>
+                       Margin="5" DoubleTapped="TblPath_DoubleTapped" RightTapped="Grid_RightTapped"/>
             <TextBox Grid.Column="1" Name="tbxPath" VerticalAlignment="Center" 
                      Margin="5" Visibility="Collapsed"
                      TextChanged="TbxPath_TextChanged" KeyDown="TbxPath_KeyDown"/>

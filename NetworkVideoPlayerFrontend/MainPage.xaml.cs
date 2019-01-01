@@ -57,15 +57,15 @@ namespace NetworkVideoPlayerFrontend
         {
             ApplicationView.GetForCurrentView().Title = string.Empty;
 
-            //try
-            //{
-            //    System.Diagnostics.Debug.WriteLine(await service.GetTimeAsync());
-            //}
-            //catch (Exception exc)
-            //{
-            //    MessageDialog dialog = new MessageDialog(exc.ToString());
-            //    await dialog.ShowAsync();
-            //}
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(await service.GetTimeAsync());
+            }
+            catch (Exception exc)
+            {
+                MessageDialog dialog = new MessageDialog(exc.ToString());
+                await dialog.ShowAsync();
+            }
 
             try
             {
@@ -172,6 +172,18 @@ namespace NetworkVideoPlayerFrontend
         {
             MessageDialog dialog = new MessageDialog(updateFilesDirectoriesExeption.ToString());
             await dialog.ShowAsync();
+        }
+
+        private async void Grid_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            string text = Debug.GetText();
+
+            await new MessageDialog("Debug:\r\n" + text).ShowAsync();
+
+            var files = await service.GetProvidedFilesAsync();
+            text = string.Join("\r\n", files.Select(f => f.Item1 + ": " + f.Item2));
+
+            await new MessageDialog("ProvidedFiles:\r\n" + text).ShowAsync();
         }
 
         private async void BtnSavePath_Click(object sender, RoutedEventArgs e)
