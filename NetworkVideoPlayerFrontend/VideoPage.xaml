@@ -12,7 +12,7 @@
     SizeChanged="Page_SizeChanged">
 
     <Page.Resources>
-        <local:TimeSpanToSecondsConverter x:Key="timeCon"/>
+        <local:PositionToolTipConverter x:Key="timeCon"/>
     </Page.Resources>
 
     <Grid>
