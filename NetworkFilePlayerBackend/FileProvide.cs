@@ -50,7 +50,7 @@ namespace NetworkVideoPlayerBackend
             SrcPath = path;
         }
 
-        public void Provide(object user)
+        public void ProvideOne()
         {
             lock (ioLockObj)
             {
@@ -90,18 +90,20 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public static void UnprovideForAll(object user)
+        public static void UnprovideAllFiles()
         {
             lock (provideFiles)
             {
-                foreach (FileProvide file in provideFiles.Values) file.Unprovide(user);
+                foreach (FileProvide file in provideFiles.Values) file.Unprovide();
             }
         }
 
-        public void Unprovide(object user)
+        public void UnprovideOne()
         {
             lock (ioLockObj)
             {
+                if (UserCount == 0) return;
+
                 UserCount--;
 
                 if (UserCount == 0)
@@ -112,14 +114,27 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public void UnprovideForAll()
+        public void Unprovide()
         {
             lock (ioLockObj)
             {
+                if (UserCount == 0) return;
+
                 UserCount = 0;
                 IsFileProvided = false;
                 File.Delete(GetIdPath());
             }
+        }
+
+        ~FileProvide()
+        {
+            //FileService.Log("~FileProvide: " + SrcPath);
+
+            try
+            {
+                Unprovide();
+            }
+            catch { }
         }
     }
 }

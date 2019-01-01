@@ -42,7 +42,7 @@ namespace NetworkVideoPlayerBackend
             try
             {
                 FileProvide file = FileProvide.GetInstance(path);
-                file.Provide(this);
+                file.ProvideOne();
 
                 return file.ID;
             }
@@ -58,7 +58,7 @@ namespace NetworkVideoPlayerBackend
             try
             {
                 FileProvide file = FileProvide.GetInstance(path);
-                file.Unprovide(this);
+                file.UnprovideOne();
             }
             catch (Exception e)
             {
@@ -72,7 +72,7 @@ namespace NetworkVideoPlayerBackend
             try
             {
                 FileProvide file = FileProvide.GetInstance(path);
-                file.UnprovideForAll();
+                file.Unprovide();
             }
             catch (Exception e)
             {
@@ -107,11 +107,6 @@ namespace NetworkVideoPlayerBackend
                 File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "service.log"), text + "\r\n");
             }
             catch { }
-        }
-
-        ~FileService()
-        {
-            FileProvide.UnprovideForAll(this);
         }
     }
 }
