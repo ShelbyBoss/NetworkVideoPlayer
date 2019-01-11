@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace NetworkVideoPlayerBackend
 {
     public class FileProvide
     {
+        public static string BasePath = AppDomain.CurrentDomain.BaseDirectory;
+
         private static Dictionary<string, FileProvide> provideFiles = new Dictionary<string, FileProvide>();
 
         public static FileProvide GetInstance(string path)
@@ -26,7 +29,7 @@ namespace NetworkVideoPlayerBackend
         {
             lock (provideFiles)
             {
-                return provideFiles.Values.Where(p => p.UserCount > 0).ToArray();
+                return provideFiles.Values.Where(p => p.IsFileProvided).ToArray();
             }
         }
 
@@ -48,6 +51,7 @@ namespace NetworkVideoPlayerBackend
             UserCount = 0;
 
             SrcPath = path;
+            ID = GetID(Path.GetExtension(SrcPath));
         }
 
         public void ProvideOne()
@@ -58,12 +62,32 @@ namespace NetworkVideoPlayerBackend
 
                 if (IsFileProvided) return;
 
+                Provide();
+            }
+        }
+
+        public void StartProvideOne()
+        {
+            lock (ioLockObj)
+            {
+                UserCount++;
+
+                if (IsFileProvided) return;
+
                 if (string.IsNullOrWhiteSpace(ID)) ID = GetID(Path.GetExtension(SrcPath));
 
-                IsProvidingFile = true;
+                Task.Run(new Action(Provide));
+            }
+        }
 
-                File.Copy(SrcPath, GetIdPath());
+        private void Provide()
+        {
+            lock (ioLockObj) IsProvidingFile = true;
 
+            File.Copy(SrcPath, GetIdPath());
+
+            lock (ioLockObj)
+            {
                 IsFileProvided = true;
                 IsProvidingFile = false;
             }
@@ -71,7 +95,7 @@ namespace NetworkVideoPlayerBackend
 
         private string GetIdPath()
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ID);
+            return Path.Combine(BasePath, ID);
         }
 
         private static string GetID(string extension)

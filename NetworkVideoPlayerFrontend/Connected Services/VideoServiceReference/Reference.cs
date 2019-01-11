@@ -17,12 +17,14 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ValueTupleOfstringint", Namespace="http://schemas.datacontract.org/2004/07/System")]
-    public partial struct ValueTupleOfstringint : System.ComponentModel.INotifyPropertyChanged {
+    [System.Runtime.Serialization.DataContractAttribute(Name="ValueTupleOfstringstringint", Namespace="http://schemas.datacontract.org/2004/07/System")]
+    public partial struct ValueTupleOfstringstringint : System.ComponentModel.INotifyPropertyChanged {
         
         private string Item1Field;
         
-        private int Item2Field;
+        private string Item2Field;
+        
+        private int Item3Field;
         
         [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
         public string Item1 {
@@ -38,14 +40,27 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public int Item2 {
+        public string Item2 {
             get {
                 return this.Item2Field;
             }
             set {
-                if ((this.Item2Field.Equals(value) != true)) {
+                if ((object.ReferenceEquals(this.Item2Field, value) != true)) {
                     this.Item2Field = value;
                     this.RaisePropertyChanged("Item2");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
+        public int Item3 {
+            get {
+                return this.Item3Field;
+            }
+            set {
+                if ((this.Item3Field.Equals(value) != true)) {
+                    this.Item3Field = value;
+                    this.RaisePropertyChanged("Item3");
                 }
             }
         }
@@ -65,13 +80,31 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
     public interface IFileService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFiles", ReplyAction="http://tempuri.org/IFileService/GetFilesResponse")]
-        System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<string>> GetFilesAsync(string path);
+        System.Threading.Tasks.Task<string[]> GetFilesAsync(string path);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFilesPage", ReplyAction="http://tempuri.org/IFileService/GetFilesPageResponse")]
+        System.Threading.Tasks.Task<string[]> GetFilesPageAsync(string path, int pageSize, int pageIndex);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetDirectories", ReplyAction="http://tempuri.org/IFileService/GetDirectoriesResponse")]
-        System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<string>> GetDirectoriesAsync(string path);
+        System.Threading.Tasks.Task<string[]> GetDirectoriesAsync(string path);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetDirectoriesPage", ReplyAction="http://tempuri.org/IFileService/GetDirectoriesPageResponse")]
+        System.Threading.Tasks.Task<string[]> GetDirectoriesPageAsync(string path, int pageSize, int pageIndex);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/IsFileProvided", ReplyAction="http://tempuri.org/IFileService/IsFileProvidedResponse")]
+        System.Threading.Tasks.Task<bool> IsFileProvidedAsync(string path);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/IsProvidingFile", ReplyAction="http://tempuri.org/IFileService/IsProvidingFileResponse")]
+        System.Threading.Tasks.Task<bool> IsProvidingFileAsync(string path);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/StartProvideFile", ReplyAction="http://tempuri.org/IFileService/StartProvideFileResponse")]
+        System.Threading.Tasks.Task<string> StartProvideFileAsync(string path);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/ProvideFile", ReplyAction="http://tempuri.org/IFileService/ProvideFileResponse")]
         System.Threading.Tasks.Task<string> ProvideFileAsync(string path);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFileId", ReplyAction="http://tempuri.org/IFileService/GetFileIdResponse")]
+        System.Threading.Tasks.Task<string> GetFileIdAsync(string path);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/UnprovideFile", ReplyAction="http://tempuri.org/IFileService/UnprovideFileResponse")]
         System.Threading.Tasks.Task UnprovideFileAsync(string path);
@@ -79,11 +112,17 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/UnprovideFileForAll", ReplyAction="http://tempuri.org/IFileService/UnprovideFileForAllResponse")]
         System.Threading.Tasks.Task UnprovideFileForAllAsync(string path);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetProvidedFiles", ReplyAction="http://tempuri.org/IFileService/GetProvidedFilesResponse")]
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesAsync();
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetProvidedFilesPage", ReplyAction="http://tempuri.org/IFileService/GetProvidedFilesPageResponse")]
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetBasePath", ReplyAction="http://tempuri.org/IFileService/GetBasePathResponse")]
+        System.Threading.Tasks.Task<string> GetBasePathAsync();
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetTime", ReplyAction="http://tempuri.org/IFileService/GetTimeResponse")]
         System.Threading.Tasks.Task<string> GetTimeAsync();
-        
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetProvidedFiles", ReplyAction="http://tempuri.org/IFileService/GetProvidedFilesResponse")]
-        System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringint>> GetProvidedFilesAsync();
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -129,16 +168,40 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
                 base(binding, remoteAddress) {
         }
         
-        public System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<string>> GetFilesAsync(string path) {
+        public System.Threading.Tasks.Task<string[]> GetFilesAsync(string path) {
             return base.Channel.GetFilesAsync(path);
         }
         
-        public System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<string>> GetDirectoriesAsync(string path) {
+        public System.Threading.Tasks.Task<string[]> GetFilesPageAsync(string path, int pageSize, int pageIndex) {
+            return base.Channel.GetFilesPageAsync(path, pageSize, pageIndex);
+        }
+        
+        public System.Threading.Tasks.Task<string[]> GetDirectoriesAsync(string path) {
             return base.Channel.GetDirectoriesAsync(path);
+        }
+        
+        public System.Threading.Tasks.Task<string[]> GetDirectoriesPageAsync(string path, int pageSize, int pageIndex) {
+            return base.Channel.GetDirectoriesPageAsync(path, pageSize, pageIndex);
+        }
+        
+        public System.Threading.Tasks.Task<bool> IsFileProvidedAsync(string path) {
+            return base.Channel.IsFileProvidedAsync(path);
+        }
+        
+        public System.Threading.Tasks.Task<bool> IsProvidingFileAsync(string path) {
+            return base.Channel.IsProvidingFileAsync(path);
+        }
+        
+        public System.Threading.Tasks.Task<string> StartProvideFileAsync(string path) {
+            return base.Channel.StartProvideFileAsync(path);
         }
         
         public System.Threading.Tasks.Task<string> ProvideFileAsync(string path) {
             return base.Channel.ProvideFileAsync(path);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetFileIdAsync(string path) {
+            return base.Channel.GetFileIdAsync(path);
         }
         
         public System.Threading.Tasks.Task UnprovideFileAsync(string path) {
@@ -149,12 +212,20 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
             return base.Channel.UnprovideFileForAllAsync(path);
         }
         
-        public System.Threading.Tasks.Task<string> GetTimeAsync() {
-            return base.Channel.GetTimeAsync();
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesAsync() {
+            return base.Channel.GetProvidedFilesAsync();
         }
         
-        public System.Threading.Tasks.Task<System.Collections.ObjectModel.ObservableCollection<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringint>> GetProvidedFilesAsync() {
-            return base.Channel.GetProvidedFilesAsync();
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex) {
+            return base.Channel.GetProvidedFilesPageAsync(pageSize, pageIndex);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetBasePathAsync() {
+            return base.Channel.GetBasePathAsync();
+        }
+        
+        public System.Threading.Tasks.Task<string> GetTimeAsync() {
+            return base.Channel.GetTimeAsync();
         }
         
         public virtual System.Threading.Tasks.Task OpenAsync() {

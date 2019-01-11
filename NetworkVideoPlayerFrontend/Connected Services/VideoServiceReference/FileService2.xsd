@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/System" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-  <xs:complexType name="ArrayOfValueTupleOfstringint">
+  <xs:complexType name="ArrayOfValueTupleOfstringstringint">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="ValueTupleOfstringint" type="tns:ValueTupleOfstringint" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ValueTupleOfstringstringint" type="tns:ValueTupleOfstringstringint" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="ArrayOfValueTupleOfstringint" nillable="true" type="tns:ArrayOfValueTupleOfstringint" />
-  <xs:complexType name="ValueTupleOfstringint">
+  <xs:element name="ArrayOfValueTupleOfstringstringint" nillable="true" type="tns:ArrayOfValueTupleOfstringstringint" />
+  <xs:complexType name="ValueTupleOfstringstringint">
     <xs:annotation>
       <xs:appinfo>
-        <GenericType Name="ValueTupleOf{0}{1}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+        <GenericType Name="ValueTupleOf{0}{1}{2}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
           <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
           <GenericParameter Name="int" Namespace="http://www.w3.org/2001/XMLSchema" />
         </GenericType>
@@ -19,8 +20,9 @@
     </xs:annotation>
     <xs:sequence>
       <xs:element name="Item1" nillable="true" type="xs:string" />
-      <xs:element name="Item2" type="xs:int" />
+      <xs:element name="Item2" nillable="true" type="xs:string" />
+      <xs:element name="Item3" type="xs:int" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="ValueTupleOfstringint" nillable="true" type="tns:ValueTupleOfstringint" />
+  <xs:element name="ValueTupleOfstringstringint" nillable="true" type="tns:ValueTupleOfstringstringint" />
 </xs:schema>

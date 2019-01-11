@@ -1,8 +1,11 @@
 ﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI;
@@ -18,6 +21,7 @@ namespace NetworkVideoPlayerFrontend
 {
     public sealed partial class MainPage : Page
     {
+        private const int pageSize = 100;
         private const string pathFilename = "path.txt";
         private static readonly Brush errorPathForeground = new SolidColorBrush(Colors.Red);
 
@@ -26,6 +30,7 @@ namespace NetworkVideoPlayerFrontend
         private readonly Brush defaultTbxPathForeground, defaultTblPathForeground;
         private FileServiceClient service;
         private Exception updateFilesDirectoriesExeption;
+        private StorageItemCollection items;
 
         private string DirectoryPath
         {
@@ -45,6 +50,8 @@ namespace NetworkVideoPlayerFrontend
         {
             this.InitializeComponent();
 
+            lbxFolderContent.ItemsSource = items = new StorageItemCollection();
+
             service = ((App)Application.Current).Service;
 
             defaultTbxPathForeground = tbxPath.Foreground;
@@ -59,7 +66,7 @@ namespace NetworkVideoPlayerFrontend
 
             try
             {
-                System.Diagnostics.Debug.WriteLine(await service.GetTimeAsync());
+                System.Diagnostics.Debug.WriteLine(await service.GetBasePathAsync());
             }
             catch (Exception exc)
             {
@@ -92,12 +99,12 @@ namespace NetworkVideoPlayerFrontend
             {
                 rpb.IsActive = true;
 
-                var dirsTask = service.GetDirectoriesAsync(DirectoryPath);
-                var filesTask = service.GetFilesAsync(DirectoryPath);
-                StorageItem[] folders = (await dirsTask).Select(p => StorageItem.GetDirectory(p)).ToArray();
-                StorageItem[] files = (await filesTask).Select(p => StorageItem.GetFile(p)).ToArray();
+                items.Clear();
 
-                lbxFolderContent.ItemsSource = folders.Concat(files);
+                Task dirsTask = AddAllDirectoriesAsync(DirectoryPath, items);
+                Task filesTask = AddAllFilesAsync(DirectoryPath,items);
+                await dirsTask;
+                await filesTask;
 
                 tbxPath.Foreground = defaultTbxPathForeground;
                 tblPath.Foreground = defaultTblPathForeground;
@@ -107,13 +114,39 @@ namespace NetworkVideoPlayerFrontend
             {
                 updateFilesDirectoriesExeption = e;
 
-                lbxFolderContent.ItemsSource = Enumerable.Empty<StorageItem>();
-
                 tbxPath.Foreground = tblPath.Foreground = errorPathForeground;
                 btnError.Visibility = Visibility.Visible;
             }
 
             rpb.IsActive = false;
+        }
+
+        private async Task AddAllFilesAsync(string path, IList<StorageItem> items)
+        {
+            int i = 0;
+            string[] page;
+
+            do
+            {
+                page = await service.GetFilesPageAsync(path, pageSize, i++);
+
+                foreach (StorageItem item in page.Select(p => StorageItem.GetFile(p))) items.Add(item);
+            }
+            while (page.Length > 0);
+        }
+
+        private async Task AddAllDirectoriesAsync(string path, IList<StorageItem> items)
+        {
+            int i = 0;
+            string[] page;
+
+            do
+            {
+                page = await service.GetDirectoriesPageAsync(path, pageSize, i++);
+
+                foreach (StorageItem item in page.Select(p => StorageItem.GetDirectory(p))) items.Add(item);
+            }
+            while (page.Length > 0);
         }
 
         private void BtnToParent_Click(object sender, RoutedEventArgs e)
@@ -192,6 +225,7 @@ namespace NetworkVideoPlayerFrontend
             {
                 StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(pathFilename);
                 await FileIO.WriteTextAsync(file, DirectoryPath);
+                return;
             }
             catch (FileNotFoundException) { }
             catch (Exception exc)

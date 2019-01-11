@@ -1,13 +1,10 @@
 ﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Storage;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -19,6 +16,7 @@ namespace NetworkVideoPlayerFrontend
     /// </summary>
     sealed partial class App : Application
     {
+        private static TimeSpan waitTimeSpan = TimeSpan.FromSeconds(1);
         public static string ServerAddress = "http://nas-server/filewcfservice/";
         private const string serviceName = "FileService.svc";
 
@@ -184,7 +182,15 @@ namespace NetworkVideoPlayerFrontend
             //}
 
             providedFiles.Add(path);
-            return await Service.ProvideFileAsync(path);
+
+            string id = await Service.StartProvideFileAsync(path);
+
+            while (!await Service.IsFileProvidedAsync(path))
+            {
+                await Task.Delay(waitTimeSpan);
+            }
+
+            return id;
         }
 
         public async Task UnprovideFileAsync(string path)

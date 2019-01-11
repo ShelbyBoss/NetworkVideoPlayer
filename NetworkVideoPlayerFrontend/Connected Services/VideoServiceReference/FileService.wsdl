@@ -14,17 +14,53 @@
   <wsdl:message name="IFileService_GetFiles_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetFilesResponse" />
   </wsdl:message>
+  <wsdl:message name="IFileService_GetFilesPage_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFilesPage" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetFilesPage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFilesPageResponse" />
+  </wsdl:message>
   <wsdl:message name="IFileService_GetDirectories_InputMessage">
     <wsdl:part name="parameters" element="tns:GetDirectories" />
   </wsdl:message>
   <wsdl:message name="IFileService_GetDirectories_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetDirectoriesResponse" />
   </wsdl:message>
+  <wsdl:message name="IFileService_GetDirectoriesPage_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectoriesPage" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetDirectoriesPage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectoriesPageResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_IsFileProvided_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsFileProvided" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_IsFileProvided_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsFileProvidedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_IsProvidingFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:IsProvidingFile" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_IsProvidingFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:IsProvidingFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_StartProvideFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:StartProvideFile" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_StartProvideFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StartProvideFileResponse" />
+  </wsdl:message>
   <wsdl:message name="IFileService_ProvideFile_InputMessage">
     <wsdl:part name="parameters" element="tns:ProvideFile" />
   </wsdl:message>
   <wsdl:message name="IFileService_ProvideFile_OutputMessage">
     <wsdl:part name="parameters" element="tns:ProvideFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetFileId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileId" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetFileId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileIdResponse" />
   </wsdl:message>
   <wsdl:message name="IFileService_UnprovideFile_InputMessage">
     <wsdl:part name="parameters" element="tns:UnprovideFile" />
@@ -38,30 +74,66 @@
   <wsdl:message name="IFileService_UnprovideFileForAll_OutputMessage">
     <wsdl:part name="parameters" element="tns:UnprovideFileForAllResponse" />
   </wsdl:message>
-  <wsdl:message name="IFileService_GetTime_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetTime" />
-  </wsdl:message>
-  <wsdl:message name="IFileService_GetTime_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetTimeResponse" />
-  </wsdl:message>
   <wsdl:message name="IFileService_GetProvidedFiles_InputMessage">
     <wsdl:part name="parameters" element="tns:GetProvidedFiles" />
   </wsdl:message>
   <wsdl:message name="IFileService_GetProvidedFiles_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetProvidedFilesResponse" />
   </wsdl:message>
+  <wsdl:message name="IFileService_GetProvidedFilesPage_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProvidedFilesPage" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetProvidedFilesPage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetProvidedFilesPageResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetBasePath_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBasePath" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetBasePath_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBasePathResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetTime_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTime" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetTime_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTimeResponse" />
+  </wsdl:message>
   <wsdl:portType name="IFileService">
     <wsdl:operation name="GetFiles">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFiles" message="tns:IFileService_GetFiles_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFilesResponse" message="tns:IFileService_GetFiles_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetFilesPage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFilesPage" message="tns:IFileService_GetFilesPage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFilesPageResponse" message="tns:IFileService_GetFilesPage_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetDirectories">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectories" message="tns:IFileService_GetDirectories_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesResponse" message="tns:IFileService_GetDirectories_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetDirectoriesPage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesPage" message="tns:IFileService_GetDirectoriesPage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesPageResponse" message="tns:IFileService_GetDirectoriesPage_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsFileProvided">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/IsFileProvided" message="tns:IFileService_IsFileProvided_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/IsFileProvidedResponse" message="tns:IFileService_IsFileProvided_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="IsProvidingFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/IsProvidingFile" message="tns:IFileService_IsProvidingFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/IsProvidingFileResponse" message="tns:IFileService_IsProvidingFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="StartProvideFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/StartProvideFile" message="tns:IFileService_StartProvideFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/StartProvideFileResponse" message="tns:IFileService_StartProvideFile_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="ProvideFile">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/ProvideFile" message="tns:IFileService_ProvideFile_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/ProvideFileResponse" message="tns:IFileService_ProvideFile_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFileId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFileId" message="tns:IFileService_GetFileId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFileIdResponse" message="tns:IFileService_GetFileId_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="UnprovideFile">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/UnprovideFile" message="tns:IFileService_UnprovideFile_InputMessage" />
@@ -71,19 +143,36 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/UnprovideFileForAll" message="tns:IFileService_UnprovideFileForAll_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/UnprovideFileForAllResponse" message="tns:IFileService_UnprovideFileForAll_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetTime">
-      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetTime" message="tns:IFileService_GetTime_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetTimeResponse" message="tns:IFileService_GetTime_OutputMessage" />
-    </wsdl:operation>
     <wsdl:operation name="GetProvidedFiles">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetProvidedFiles" message="tns:IFileService_GetProvidedFiles_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetProvidedFilesResponse" message="tns:IFileService_GetProvidedFiles_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProvidedFilesPage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetProvidedFilesPage" message="tns:IFileService_GetProvidedFilesPage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetProvidedFilesPageResponse" message="tns:IFileService_GetProvidedFilesPage_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBasePath">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetBasePath" message="tns:IFileService_GetBasePath_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetBasePathResponse" message="tns:IFileService_GetBasePath_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetTime" message="tns:IFileService_GetTime_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetTimeResponse" message="tns:IFileService_GetTime_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IFileService" type="tns:IFileService">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
     <wsdl:operation name="GetFiles">
       <soap:operation soapAction="http://tempuri.org/IFileService/GetFiles" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFilesPage">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetFilesPage" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -100,8 +189,53 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetDirectoriesPage">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetDirectoriesPage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsFileProvided">
+      <soap:operation soapAction="http://tempuri.org/IFileService/IsFileProvided" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="IsProvidingFile">
+      <soap:operation soapAction="http://tempuri.org/IFileService/IsProvidingFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="StartProvideFile">
+      <soap:operation soapAction="http://tempuri.org/IFileService/StartProvideFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ProvideFile">
       <soap:operation soapAction="http://tempuri.org/IFileService/ProvideFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileId">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetFileId" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -127,8 +261,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetTime">
-      <soap:operation soapAction="http://tempuri.org/IFileService/GetTime" style="document" />
+    <wsdl:operation name="GetProvidedFiles">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetProvidedFiles" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -136,8 +270,26 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetProvidedFiles">
-      <soap:operation soapAction="http://tempuri.org/IFileService/GetProvidedFiles" style="document" />
+    <wsdl:operation name="GetProvidedFilesPage">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetProvidedFilesPage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBasePath">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetBasePath" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTime">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetTime" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
