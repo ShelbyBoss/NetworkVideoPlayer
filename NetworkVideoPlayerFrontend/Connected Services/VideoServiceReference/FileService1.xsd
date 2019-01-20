@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
-  <xs:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/System" />
+  <xs:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" />
   <xs:element name="GetFiles">
     <xs:complexType>
       <xs:sequence>
@@ -32,6 +32,20 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetFileProperties">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFilePropertiesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" minOccurs="0" name="GetFilePropertiesResult" nillable="true" type="q3:FileProperties" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetDirectories">
     <xs:complexType>
       <xs:sequence>
@@ -42,7 +56,7 @@
   <xs:element name="GetDirectoriesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetDirectoriesResult" nillable="true" type="q3:ArrayOfstring" />
+        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetDirectoriesResult" nillable="true" type="q4:ArrayOfstring" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -58,35 +72,35 @@
   <xs:element name="GetDirectoriesPageResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetDirectoriesPageResult" nillable="true" type="q4:ArrayOfstring" />
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="GetDirectoriesPageResult" nillable="true" type="q5:ArrayOfstring" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="IsFileProvided">
+  <xs:element name="GetDirectoryProperties">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="IsFileProvidedResponse">
+  <xs:element name="GetDirectoryPropertiesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="IsFileProvidedResult" type="xs:boolean" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" minOccurs="0" name="GetDirectoryPropertiesResult" nillable="true" type="q6:DirectoryProperties" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="IsProvidingFile">
+  <xs:element name="GetFileStates">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="IsProvidingFileResponse">
+  <xs:element name="GetFileStatesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="IsProvidingFileResult" type="xs:boolean" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" minOccurs="0" name="GetFileStatesResult" type="q7:FileStates" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -118,18 +132,16 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetFileId">
+  <xs:element name="StartUnprovideFile">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetFileIdResponse">
+  <xs:element name="StartUnprovideFileResponse">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="GetFileIdResult" nillable="true" type="xs:string" />
-      </xs:sequence>
+      <xs:sequence />
     </xs:complexType>
   </xs:element>
   <xs:element name="UnprovideFile">
@@ -156,6 +168,18 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="StartUnprovideFileForAll">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="path" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="StartUnprovideFileForAllResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetProvidedFiles">
     <xs:complexType>
       <xs:sequence />
@@ -164,7 +188,7 @@
   <xs:element name="GetProvidedFilesResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="GetProvidedFilesResult" nillable="true" type="q5:ArrayOfValueTupleOfstringstringint" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" minOccurs="0" name="GetProvidedFilesResult" nillable="true" type="q8:ArrayOfFileStates" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -179,7 +203,7 @@
   <xs:element name="GetProvidedFilesPageResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/System" minOccurs="0" name="GetProvidedFilesPageResult" nillable="true" type="q6:ArrayOfValueTupleOfstringstringint" />
+        <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" minOccurs="0" name="GetProvidedFilesPageResult" nillable="true" type="q9:ArrayOfFileStates" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -17,50 +17,259 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ValueTupleOfstringstringint", Namespace="http://schemas.datacontract.org/2004/07/System")]
-    public partial struct ValueTupleOfstringstringint : System.ComponentModel.INotifyPropertyChanged {
+    [System.Runtime.Serialization.DataContractAttribute(Name="FileSystemItem", Namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend")]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(NetworkVideoPlayerFrontend.VideoServiceReference.DirectoryProperties))]
+    [System.Runtime.Serialization.KnownTypeAttribute(typeof(NetworkVideoPlayerFrontend.VideoServiceReference.FileProperties))]
+    public partial class FileSystemItem : object, System.ComponentModel.INotifyPropertyChanged {
         
-        private string Item1Field;
+        private string AttributesField;
         
-        private string Item2Field;
+        private System.DateTime CreateTimeField;
         
-        private int Item3Field;
+        private bool ExistsField;
         
-        [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public string Item1 {
+        private string FullPathField;
+        
+        private System.DateTime LastWriteTimeField;
+        
+        private string NameField;
+        
+        private string ParentField;
+        
+        private string ParentFullPathField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false)]
+        public string Attributes {
             get {
-                return this.Item1Field;
+                return this.AttributesField;
             }
             set {
-                if ((object.ReferenceEquals(this.Item1Field, value) != true)) {
-                    this.Item1Field = value;
-                    this.RaisePropertyChanged("Item1");
+                if ((object.ReferenceEquals(this.AttributesField, value) != true)) {
+                    this.AttributesField = value;
+                    this.RaisePropertyChanged("Attributes");
                 }
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public string Item2 {
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime CreateTime {
             get {
-                return this.Item2Field;
+                return this.CreateTimeField;
             }
             set {
-                if ((object.ReferenceEquals(this.Item2Field, value) != true)) {
-                    this.Item2Field = value;
-                    this.RaisePropertyChanged("Item2");
+                if ((this.CreateTimeField.Equals(value) != true)) {
+                    this.CreateTimeField = value;
+                    this.RaisePropertyChanged("CreateTime");
                 }
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute(IsRequired=true)]
-        public int Item3 {
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Exists {
             get {
-                return this.Item3Field;
+                return this.ExistsField;
             }
             set {
-                if ((this.Item3Field.Equals(value) != true)) {
-                    this.Item3Field = value;
-                    this.RaisePropertyChanged("Item3");
+                if ((this.ExistsField.Equals(value) != true)) {
+                    this.ExistsField = value;
+                    this.RaisePropertyChanged("Exists");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string FullPath {
+            get {
+                return this.FullPathField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.FullPathField, value) != true)) {
+                    this.FullPathField = value;
+                    this.RaisePropertyChanged("FullPath");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime LastWriteTime {
+            get {
+                return this.LastWriteTimeField;
+            }
+            set {
+                if ((this.LastWriteTimeField.Equals(value) != true)) {
+                    this.LastWriteTimeField = value;
+                    this.RaisePropertyChanged("LastWriteTime");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Name {
+            get {
+                return this.NameField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NameField, value) != true)) {
+                    this.NameField = value;
+                    this.RaisePropertyChanged("Name");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Parent {
+            get {
+                return this.ParentField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ParentField, value) != true)) {
+                    this.ParentField = value;
+                    this.RaisePropertyChanged("Parent");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ParentFullPath {
+            get {
+                return this.ParentFullPathField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ParentFullPathField, value) != true)) {
+                    this.ParentFullPathField = value;
+                    this.RaisePropertyChanged("ParentFullPath");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="DirectoryProperties", Namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend")]
+    public partial class DirectoryProperties : NetworkVideoPlayerFrontend.VideoServiceReference.FileSystemItem {
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="FileProperties", Namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend")]
+    public partial class FileProperties : NetworkVideoPlayerFrontend.VideoServiceReference.FileSystemItem {
+        
+        private string ExtensionField;
+        
+        private long LengthField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Extension {
+            get {
+                return this.ExtensionField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ExtensionField, value) != true)) {
+                    this.ExtensionField = value;
+                    this.RaisePropertyChanged("Extension");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public long Length {
+            get {
+                return this.LengthField;
+            }
+            set {
+                if ((this.LengthField.Equals(value) != true)) {
+                    this.LengthField = value;
+                    this.RaisePropertyChanged("Length");
+                }
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="FileStates", Namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend")]
+    public partial struct FileStates : System.ComponentModel.INotifyPropertyChanged {
+        
+        private string IDField;
+        
+        private bool IsFileProvidedField;
+        
+        private bool IsProvidingFileField;
+        
+        private string PathField;
+        
+        private int UserCountField;
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string ID {
+            get {
+                return this.IDField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.IDField, value) != true)) {
+                    this.IDField = value;
+                    this.RaisePropertyChanged("ID");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsFileProvided {
+            get {
+                return this.IsFileProvidedField;
+            }
+            set {
+                if ((this.IsFileProvidedField.Equals(value) != true)) {
+                    this.IsFileProvidedField = value;
+                    this.RaisePropertyChanged("IsFileProvided");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool IsProvidingFile {
+            get {
+                return this.IsProvidingFileField;
+            }
+            set {
+                if ((this.IsProvidingFileField.Equals(value) != true)) {
+                    this.IsProvidingFileField = value;
+                    this.RaisePropertyChanged("IsProvidingFile");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Path {
+            get {
+                return this.PathField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.PathField, value) != true)) {
+                    this.PathField = value;
+                    this.RaisePropertyChanged("Path");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int UserCount {
+            get {
+                return this.UserCountField;
+            }
+            set {
+                if ((this.UserCountField.Equals(value) != true)) {
+                    this.UserCountField = value;
+                    this.RaisePropertyChanged("UserCount");
                 }
             }
         }
@@ -85,17 +294,20 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFilesPage", ReplyAction="http://tempuri.org/IFileService/GetFilesPageResponse")]
         System.Threading.Tasks.Task<string[]> GetFilesPageAsync(string path, int pageSize, int pageIndex);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFileProperties", ReplyAction="http://tempuri.org/IFileService/GetFilePropertiesResponse")]
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileProperties> GetFilePropertiesAsync(string path);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetDirectories", ReplyAction="http://tempuri.org/IFileService/GetDirectoriesResponse")]
         System.Threading.Tasks.Task<string[]> GetDirectoriesAsync(string path);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetDirectoriesPage", ReplyAction="http://tempuri.org/IFileService/GetDirectoriesPageResponse")]
         System.Threading.Tasks.Task<string[]> GetDirectoriesPageAsync(string path, int pageSize, int pageIndex);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/IsFileProvided", ReplyAction="http://tempuri.org/IFileService/IsFileProvidedResponse")]
-        System.Threading.Tasks.Task<bool> IsFileProvidedAsync(string path);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetDirectoryProperties", ReplyAction="http://tempuri.org/IFileService/GetDirectoryPropertiesResponse")]
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.DirectoryProperties> GetDirectoryPropertiesAsync(string path);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/IsProvidingFile", ReplyAction="http://tempuri.org/IFileService/IsProvidingFileResponse")]
-        System.Threading.Tasks.Task<bool> IsProvidingFileAsync(string path);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFileStates", ReplyAction="http://tempuri.org/IFileService/GetFileStatesResponse")]
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates> GetFileStatesAsync(string path);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/StartProvideFile", ReplyAction="http://tempuri.org/IFileService/StartProvideFileResponse")]
         System.Threading.Tasks.Task<string> StartProvideFileAsync(string path);
@@ -103,8 +315,8 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/ProvideFile", ReplyAction="http://tempuri.org/IFileService/ProvideFileResponse")]
         System.Threading.Tasks.Task<string> ProvideFileAsync(string path);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetFileId", ReplyAction="http://tempuri.org/IFileService/GetFileIdResponse")]
-        System.Threading.Tasks.Task<string> GetFileIdAsync(string path);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/StartUnprovideFile", ReplyAction="http://tempuri.org/IFileService/StartUnprovideFileResponse")]
+        System.Threading.Tasks.Task StartUnprovideFileAsync(string path);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/UnprovideFile", ReplyAction="http://tempuri.org/IFileService/UnprovideFileResponse")]
         System.Threading.Tasks.Task UnprovideFileAsync(string path);
@@ -112,11 +324,14 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/UnprovideFileForAll", ReplyAction="http://tempuri.org/IFileService/UnprovideFileForAllResponse")]
         System.Threading.Tasks.Task UnprovideFileForAllAsync(string path);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/StartUnprovideFileForAll", ReplyAction="http://tempuri.org/IFileService/StartUnprovideFileForAllResponse")]
+        System.Threading.Tasks.Task StartUnprovideFileForAllAsync(string path);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetProvidedFiles", ReplyAction="http://tempuri.org/IFileService/GetProvidedFilesResponse")]
-        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesAsync();
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates[]> GetProvidedFilesAsync();
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetProvidedFilesPage", ReplyAction="http://tempuri.org/IFileService/GetProvidedFilesPageResponse")]
-        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex);
+        System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IFileService/GetBasePath", ReplyAction="http://tempuri.org/IFileService/GetBasePathResponse")]
         System.Threading.Tasks.Task<string> GetBasePathAsync();
@@ -176,6 +391,10 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
             return base.Channel.GetFilesPageAsync(path, pageSize, pageIndex);
         }
         
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileProperties> GetFilePropertiesAsync(string path) {
+            return base.Channel.GetFilePropertiesAsync(path);
+        }
+        
         public System.Threading.Tasks.Task<string[]> GetDirectoriesAsync(string path) {
             return base.Channel.GetDirectoriesAsync(path);
         }
@@ -184,12 +403,12 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
             return base.Channel.GetDirectoriesPageAsync(path, pageSize, pageIndex);
         }
         
-        public System.Threading.Tasks.Task<bool> IsFileProvidedAsync(string path) {
-            return base.Channel.IsFileProvidedAsync(path);
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.DirectoryProperties> GetDirectoryPropertiesAsync(string path) {
+            return base.Channel.GetDirectoryPropertiesAsync(path);
         }
         
-        public System.Threading.Tasks.Task<bool> IsProvidingFileAsync(string path) {
-            return base.Channel.IsProvidingFileAsync(path);
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates> GetFileStatesAsync(string path) {
+            return base.Channel.GetFileStatesAsync(path);
         }
         
         public System.Threading.Tasks.Task<string> StartProvideFileAsync(string path) {
@@ -200,8 +419,8 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
             return base.Channel.ProvideFileAsync(path);
         }
         
-        public System.Threading.Tasks.Task<string> GetFileIdAsync(string path) {
-            return base.Channel.GetFileIdAsync(path);
+        public System.Threading.Tasks.Task StartUnprovideFileAsync(string path) {
+            return base.Channel.StartUnprovideFileAsync(path);
         }
         
         public System.Threading.Tasks.Task UnprovideFileAsync(string path) {
@@ -212,11 +431,15 @@ namespace NetworkVideoPlayerFrontend.VideoServiceReference {
             return base.Channel.UnprovideFileForAllAsync(path);
         }
         
-        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesAsync() {
+        public System.Threading.Tasks.Task StartUnprovideFileForAllAsync(string path) {
+            return base.Channel.StartUnprovideFileForAllAsync(path);
+        }
+        
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates[]> GetProvidedFilesAsync() {
             return base.Channel.GetProvidedFilesAsync();
         }
         
-        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex) {
+        public System.Threading.Tasks.Task<NetworkVideoPlayerFrontend.VideoServiceReference.FileStates[]> GetProvidedFilesPageAsync(int pageSize, int pageIndex) {
             return base.Channel.GetProvidedFilesPageAsync(pageSize, pageIndex);
         }
         

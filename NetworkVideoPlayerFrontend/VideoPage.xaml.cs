@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.Media.Playback;
@@ -22,7 +23,7 @@ namespace NetworkVideoPlayerFrontend
         private static readonly TimeSpan removeUiWaitTime = TimeSpan.FromSeconds(3);
 
         private bool isUpdatingPosition, unloadMedia, loadMedia;
-        private StorageItem item;
+        private ApplicationState state;
         private DateTime lastWaitStarted;
         private App app;
 
@@ -44,15 +45,25 @@ namespace NetworkVideoPlayerFrontend
 
         private async void PlaybackSession_PositionChangedAsync(MediaPlaybackSession sender, object args)
         {
+            if (Math.Abs((state.Position - sender.Position).TotalMilliseconds) < 200) return;
+
+            try
+            {
+                state.Position = sender.Position;
+                await state.Save(((App)Application.Current).ApplicationStateFile);
+            }
+            catch { }
+
+            if (isUpdatingPosition) return;
+            isUpdatingPosition = true;
+
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (isUpdatingPosition) return;
-
-                isUpdatingPosition = true;
                 sldPosition.Value = sender.Position.TotalSeconds;
-                tblPosition.Text = ConvertToString(sender.Position);
-                isUpdatingPosition = false;
+                tblPosition.Text = ApplicationState.ConvertToString(sender.Position);
             });
+
+            isUpdatingPosition = false;
         }
 
         private async void PlaybackSession_NaturalDurationChanged(MediaPlaybackSession sender, object args)
@@ -60,8 +71,15 @@ namespace NetworkVideoPlayerFrontend
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 sldPosition.Maximum = sender.NaturalDuration.TotalSeconds;
-                tblDuration.Text = ConvertToString(sender.NaturalDuration);
+                tblDuration.Text = ApplicationState.ConvertToString(sender.NaturalDuration);
             });
+        }
+
+        private void MediaPlayer_MediaOpened(MediaPlayer sender, object args)
+        {
+            sender.PlaybackSession.Position = state.Position;
+
+            sender.Play();
         }
 
         private async void MediaPlayer_MediaEnded(MediaPlayer sender, object args)
@@ -80,34 +98,30 @@ namespace NetworkVideoPlayerFrontend
             rpb.Height = ActualHeight / 10;
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             Debug.WriteLine("NaviTo");
-            item = (StorageItem)e.Parameter;
+            state = (ApplicationState)e.Parameter;
 
-            ApplicationView.GetForCurrentView().Title = item.Name;
+            ApplicationView.GetForCurrentView().Title = state.GetVideoName();
         }
 
         protected async override void OnNavigatingFrom(NavigatingCancelEventArgs args)
         {
             Debug.WriteLine("NaviFrom");
+
+            try
+            {
+                state.VideoPath = string.Empty;
+                state.Position = TimeSpan.Zero;
+
+                await state.Save(((App)Application.Current).ApplicationStateFile);
+            }
+            catch { }
+
             ExitFullscreenMode();
 
             await UnloadMedia();
-        }
-
-        public static string ConvertToString(TimeSpan span, bool includeMillis = false)
-        {
-            string text = string.Empty;
-            int hours = (int)Math.Floor(span.TotalHours);
-
-            if (hours >= 1) text += string.Format("{0,2}:", hours);
-
-            text += string.Format("{0,2}:{1,2}", span.Minutes, span.Seconds);
-
-            if (includeMillis) text += string.Format(":{0,2}", span.Milliseconds);
-
-            return text.Replace(' ', '0');
         }
 
         private void Mpe_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -245,7 +259,7 @@ namespace NetworkVideoPlayerFrontend
                 loadMedia = true;
                 unloadMedia = false;
 
-                string id = await app.ProvideFileAsync(item.Path);
+                string id = await app.ProvideFileAsync(state.VideoPath);
                 System.Diagnostics.Debug.WriteLine(id);
 
                 if (unloadMedia) return;
@@ -254,6 +268,7 @@ namespace NetworkVideoPlayerFrontend
 
                 if (mpe.MediaPlayer == null) mpe.SetMediaPlayer(new MediaPlayer());
 
+                mpe.MediaPlayer.MediaOpened += MediaPlayer_MediaOpened;
                 mpe.MediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
                 mpe.MediaPlayer.MediaFailed += MediaPlayer_MediaFailed;
 
@@ -265,8 +280,6 @@ namespace NetworkVideoPlayerFrontend
                     mpe.MediaPlayer.PlaybackSession.PositionChanged += PlaybackSession_PositionChangedAsync;
                     mpe.MediaPlayer.PlaybackSession.NaturalDurationChanged += PlaybackSession_NaturalDurationChanged;
                 }
-
-                mpe.MediaPlayer.Play();
             }
             catch (Exception exc)
             {
@@ -284,7 +297,12 @@ namespace NetworkVideoPlayerFrontend
             unloadMedia = true;
             loadMedia = false;
 
-            if (mpe.MediaPlayer != null) mpe.MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
+            if (mpe.MediaPlayer != null)
+            {
+                mpe.MediaPlayer.MediaOpened -= MediaPlayer_MediaOpened;
+                mpe.MediaPlayer.MediaEnded -= MediaPlayer_MediaEnded;
+                mpe.MediaPlayer.MediaFailed -= MediaPlayer_MediaFailed;
+            }
 
             if (mpe.MediaPlayer?.PlaybackSession != null)
             {
@@ -295,7 +313,7 @@ namespace NetworkVideoPlayerFrontend
 
             mpe.Source = null;
 
-            await app.UnprovideFileAsync(item.Path);
+            await app.UnprovideFileAsync(state.VideoPath);
         }
     }
 }

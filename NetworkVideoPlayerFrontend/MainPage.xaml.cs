@@ -1,10 +1,8 @@
 ﻿using NetworkVideoPlayerFrontend.VideoServiceReference;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.System;
@@ -25,22 +23,21 @@ namespace NetworkVideoPlayerFrontend
         private const string pathFilename = "path.txt";
         private static readonly Brush errorPathForeground = new SolidColorBrush(Colors.Red);
 
-        private static string directoryPath;
-
         private readonly Brush defaultTbxPathForeground, defaultTblPathForeground;
-        private FileServiceClient service;
+        private ApplicationState state;
         private Exception updateFilesDirectoriesExeption;
         private StorageItemCollection items;
 
         private string DirectoryPath
         {
-            get { return directoryPath; }
+            get { return state.DirectoryPath; }
             set
             {
-                if (value == directoryPath) return;
 
-                directoryPath = value;
-                tblPath.Text = tbxPath.Text = directoryPath;
+                if (value == state.DirectoryPath) return;
+
+                state.DirectoryPath = value;
+                tblPath.Text = tbxPath.Text = state.DirectoryPath;
 
                 UpdateStorageItems();
             }
@@ -50,23 +47,23 @@ namespace NetworkVideoPlayerFrontend
         {
             this.InitializeComponent();
 
-            lbxFolderContent.ItemsSource = items = new StorageItemCollection();
-
-            service = ((App)Application.Current).Service;
-
             defaultTbxPathForeground = tbxPath.Foreground;
             defaultTblPathForeground = tblPath.Foreground;
 
             System.Diagnostics.Debug.WriteLine("MainPageCtor");
         }
 
+        private FileServiceClient GetService() { return ((App)Application.Current).GetService(); }
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            state = (ApplicationState)e.Parameter;
+
             ApplicationView.GetForCurrentView().Title = string.Empty;
 
             try
             {
-                System.Diagnostics.Debug.WriteLine(await service.GetBasePathAsync());
+                System.Diagnostics.Debug.WriteLine(await GetService().GetBasePathAsync());
             }
             catch (Exception exc)
             {
@@ -74,37 +71,73 @@ namespace NetworkVideoPlayerFrontend
                 await dialog.ShowAsync();
             }
 
-            try
+            if (!string.IsNullOrWhiteSpace(state.VideoPath))
             {
-                if (string.IsNullOrWhiteSpace(directoryPath))
-                {
-                    StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(pathFilename);
-                    DirectoryPath = await FileIO.ReadTextAsync(file);
-                }
-                else
-                {
-                    tblPath.Text = tbxPath.Text = directoryPath;
-                    UpdateStorageItems();
-                }
+                string message = string.Format("Fortfahren von \"{0}\" bei {1}?", state.GetVideoName(), state.GetPositionAsString());
+                MessageDialog resumeDialog = new MessageDialog(message, "Fortfahren?");
+
+                resumeDialog.Commands.Add(new UICommand("Ja", new UICommandInvokedHandler(ResumewithVideoCommandHandler)));
+                resumeDialog.Commands.Add(new UICommand("Nein", new UICommandInvokedHandler(NotResumewithVideoCommandHandler)));
+
+                resumeDialog.DefaultCommandIndex = 0;
+                resumeDialog.CancelCommandIndex = 1;
+
+                await resumeDialog.ShowAsync();
             }
-            catch
+            else if (string.IsNullOrWhiteSpace(state.DirectoryPath)) await LoadSavePath();
+            else
             {
-                DirectoryPath = @"E:\";
+                tblPath.Text = tbxPath.Text = DirectoryPath;
+
+                await UpdateStorageItems();
             }
         }
 
-        private async void UpdateStorageItems()
+        private void ResumewithVideoCommandHandler(IUICommand command)
+        {
+            Frame.Navigate(typeof(VideoPage), state);
+        }
+
+        private async void NotResumewithVideoCommandHandler(IUICommand command)
+        {
+            state.VideoPath = string.Empty;
+            state.Position = TimeSpan.Zero;
+
+            await LoadSavePath();
+        }
+
+        private async Task LoadSavePath()
         {
             try
             {
-                rpb.IsActive = true;
+                StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(pathFilename);
+                DirectoryPath = await FileIO.ReadTextAsync(file);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                state.DirectoryPath = @"E:\";
+            }
+            finally
+            {
+                tblPath.Text = tbxPath.Text = DirectoryPath;
 
-                items.Clear();
+                await UpdateStorageItems();
+            }
+        }
+
+        private async Task UpdateStorageItems()
+        {
+            rpb.IsActive = true;
+
+            try
+            {
+                lbxFolderContent.ItemsSource = items = new StorageItemCollection();
 
                 Task dirsTask = AddAllDirectoriesAsync(DirectoryPath, items);
-                Task filesTask = AddAllFilesAsync(DirectoryPath,items);
-                await dirsTask;
-                await filesTask;
+                Task filesTask = AddAllFilesAsync(DirectoryPath, items);
+
+                await Task.WhenAll(dirsTask, filesTask);
 
                 tbxPath.Foreground = defaultTbxPathForeground;
                 tblPath.Foreground = defaultTblPathForeground;
@@ -128,9 +161,9 @@ namespace NetworkVideoPlayerFrontend
 
             do
             {
-                page = await service.GetFilesPageAsync(path, pageSize, i++);
+                page = await GetService().GetFilesPageAsync(path, pageSize, i++);
 
-                foreach (StorageItem item in page.Select(p => StorageItem.GetFile(p))) items.Add(item);
+                foreach (string item in page) items.Add(StorageItem.GetFile(item));
             }
             while (page.Length > 0);
         }
@@ -142,9 +175,9 @@ namespace NetworkVideoPlayerFrontend
 
             do
             {
-                page = await service.GetDirectoriesPageAsync(path, pageSize, i++);
+                page = await GetService().GetDirectoriesPageAsync(path, pageSize, i++);
 
-                foreach (StorageItem item in page.Select(p => StorageItem.GetDirectory(p))) items.Add(item);
+                foreach (string item in page) items.Add(StorageItem.GetDirectory(item));
             }
             while (page.Length > 0);
         }
@@ -155,14 +188,6 @@ namespace NetworkVideoPlayerFrontend
             int index = path.LastIndexOf('\\');
 
             if (index > 0) DirectoryPath = path.Remove(index + 1);
-        }
-
-        private void StackPanel_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            StorageItem item = (StorageItem)((FrameworkElement)sender).DataContext;
-
-            if (item.IsDirectory) DirectoryPath = item.Path;
-            else if (item.IsFile) Frame.Navigate(typeof(VideoPage), item);
         }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -198,7 +223,13 @@ namespace NetworkVideoPlayerFrontend
             StorageItem item = (StorageItem)lbxFolderContent.SelectedItem;
 
             if (item.IsDirectory) DirectoryPath = item.Path;
-            else if (item.IsFile) Frame.Navigate(typeof(VideoPage), item);
+            else if (item.IsFile)
+            {
+                state.VideoPath = item.Path;
+                state.Position = TimeSpan.Zero;
+
+                Frame.Navigate(typeof(VideoPage), state);
+            }
         }
 
         private async void BtnError_Click(object sender, RoutedEventArgs e)
@@ -213,8 +244,8 @@ namespace NetworkVideoPlayerFrontend
 
             await new MessageDialog("Debug:\r\n" + text).ShowAsync();
 
-            var files = await service.GetProvidedFilesAsync();
-            text = string.Join("\r\n", files.Select(f => f.Item1 + ": " + f.Item2));
+            var files = await GetService().GetProvidedFilesAsync();
+            text = string.Join("\r\n", files.Select(f => f.Path + ": " + f.UserCount));
 
             await new MessageDialog("ProvidedFiles:\r\n" + text).ShowAsync();
         }

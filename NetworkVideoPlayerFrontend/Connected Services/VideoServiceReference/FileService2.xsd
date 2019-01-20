@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/System" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/System" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-  <xs:complexType name="ArrayOfValueTupleOfstringstringint">
+  <xs:complexType name="FileProperties">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:FileSystemItem">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Extension" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Length" type="xs:long" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="FileProperties" nillable="true" type="tns:FileProperties" />
+  <xs:complexType name="FileSystemItem">
     <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="ValueTupleOfstringstringint" type="tns:ValueTupleOfstringstringint" />
+      <xs:element minOccurs="0" name="Attributes" type="tns:FileSystemAttributes" />
+      <xs:element minOccurs="0" name="CreateTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Exists" type="xs:boolean" />
+      <xs:element minOccurs="0" name="FullPath" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LastWriteTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Parent" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ParentFullPath" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="ArrayOfValueTupleOfstringstringint" nillable="true" type="tns:ArrayOfValueTupleOfstringstringint" />
-  <xs:complexType name="ValueTupleOfstringstringint">
+  <xs:element name="FileSystemItem" nillable="true" type="tns:FileSystemItem" />
+  <xs:simpleType name="FileSystemAttributes">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+  <xs:element name="FileSystemAttributes" nillable="true" type="tns:FileSystemAttributes" />
+  <xs:complexType name="DirectoryProperties">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:FileSystemItem">
+        <xs:sequence />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DirectoryProperties" nillable="true" type="tns:DirectoryProperties" />
+  <xs:complexType name="FileStates">
     <xs:annotation>
       <xs:appinfo>
-        <GenericType Name="ValueTupleOf{0}{1}{2}{#}" Namespace="http://schemas.datacontract.org/2004/07/System" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
-          <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
-          <GenericParameter Name="string" Namespace="http://www.w3.org/2001/XMLSchema" />
-          <GenericParameter Name="int" Namespace="http://www.w3.org/2001/XMLSchema" />
-        </GenericType>
         <IsValueType xmlns="http://schemas.microsoft.com/2003/10/Serialization/">true</IsValueType>
       </xs:appinfo>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="Item1" nillable="true" type="xs:string" />
-      <xs:element name="Item2" nillable="true" type="xs:string" />
-      <xs:element name="Item3" type="xs:int" />
+      <xs:element minOccurs="0" name="ID" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsFileProvided" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsProvidingFile" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Path" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserCount" type="xs:int" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="ValueTupleOfstringstringint" nillable="true" type="tns:ValueTupleOfstringstringint" />
+  <xs:element name="FileStates" nillable="true" type="tns:FileStates" />
+  <xs:complexType name="ArrayOfFileStates">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="FileStates" type="tns:FileStates" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfFileStates" nillable="true" type="tns:ArrayOfFileStates" />
 </xs:schema>

@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 
-namespace NetworkVideoPlayerBackend
+namespace NetworkFilePlayerBackend
 {
     [ServiceContract]
     public interface IFileService
@@ -12,16 +12,19 @@ namespace NetworkVideoPlayerBackend
         string[] GetFilesPage(string path,int pageSize, int pageIndex);
 
         [OperationContract]
+        FileProperties GetFileProperties(string path);
+
+        [OperationContract]
         string[] GetDirectories(string path);
 
         [OperationContract]
         string[] GetDirectoriesPage(string path, int pageSize, int pageIndex);
 
         [OperationContract]
-        bool IsFileProvided(string path);
+        DirectoryProperties GetDirectoryProperties(string path);
 
         [OperationContract]
-        bool IsProvidingFile(string path);
+        FileStates GetFileStates(string path);
 
         [OperationContract]
         string StartProvideFile(string path);
@@ -30,7 +33,7 @@ namespace NetworkVideoPlayerBackend
         string ProvideFile(string path);
 
         [OperationContract]
-        string GetFileId(string path);
+        void StartUnprovideFile(string path);
 
         [OperationContract]
         void UnprovideFile(string path);
@@ -39,10 +42,13 @@ namespace NetworkVideoPlayerBackend
         void UnprovideFileForAll(string path);
 
         [OperationContract]
-        (string files, string id, int count)[] GetProvidedFiles();
+        void StartUnprovideFileForAll(string path);
 
         [OperationContract]
-        (string files, string id, int count)[] GetProvidedFilesPage(int pageSize, int pageIndex);
+        FileStates[] GetProvidedFiles();
+
+        [OperationContract]
+        FileStates[] GetProvidedFilesPage(int pageSize, int pageIndex);
 
         [OperationContract]
         string GetBasePath();

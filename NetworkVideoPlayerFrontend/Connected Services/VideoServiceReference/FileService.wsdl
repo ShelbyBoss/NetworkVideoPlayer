@@ -5,7 +5,7 @@
       <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
       <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
       <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
-      <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/System" />
+      <xsd:import schemaLocation="http://localhost:6428/FileService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/NetworkFilePlayerBackend" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IFileService_GetFiles_InputMessage">
@@ -20,6 +20,12 @@
   <wsdl:message name="IFileService_GetFilesPage_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetFilesPageResponse" />
   </wsdl:message>
+  <wsdl:message name="IFileService_GetFileProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileProperties" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_GetFileProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFilePropertiesResponse" />
+  </wsdl:message>
   <wsdl:message name="IFileService_GetDirectories_InputMessage">
     <wsdl:part name="parameters" element="tns:GetDirectories" />
   </wsdl:message>
@@ -32,17 +38,17 @@
   <wsdl:message name="IFileService_GetDirectoriesPage_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetDirectoriesPageResponse" />
   </wsdl:message>
-  <wsdl:message name="IFileService_IsFileProvided_InputMessage">
-    <wsdl:part name="parameters" element="tns:IsFileProvided" />
+  <wsdl:message name="IFileService_GetDirectoryProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectoryProperties" />
   </wsdl:message>
-  <wsdl:message name="IFileService_IsFileProvided_OutputMessage">
-    <wsdl:part name="parameters" element="tns:IsFileProvidedResponse" />
+  <wsdl:message name="IFileService_GetDirectoryProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDirectoryPropertiesResponse" />
   </wsdl:message>
-  <wsdl:message name="IFileService_IsProvidingFile_InputMessage">
-    <wsdl:part name="parameters" element="tns:IsProvidingFile" />
+  <wsdl:message name="IFileService_GetFileStates_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileStates" />
   </wsdl:message>
-  <wsdl:message name="IFileService_IsProvidingFile_OutputMessage">
-    <wsdl:part name="parameters" element="tns:IsProvidingFileResponse" />
+  <wsdl:message name="IFileService_GetFileStates_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetFileStatesResponse" />
   </wsdl:message>
   <wsdl:message name="IFileService_StartProvideFile_InputMessage">
     <wsdl:part name="parameters" element="tns:StartProvideFile" />
@@ -56,11 +62,11 @@
   <wsdl:message name="IFileService_ProvideFile_OutputMessage">
     <wsdl:part name="parameters" element="tns:ProvideFileResponse" />
   </wsdl:message>
-  <wsdl:message name="IFileService_GetFileId_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetFileId" />
+  <wsdl:message name="IFileService_StartUnprovideFile_InputMessage">
+    <wsdl:part name="parameters" element="tns:StartUnprovideFile" />
   </wsdl:message>
-  <wsdl:message name="IFileService_GetFileId_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetFileIdResponse" />
+  <wsdl:message name="IFileService_StartUnprovideFile_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StartUnprovideFileResponse" />
   </wsdl:message>
   <wsdl:message name="IFileService_UnprovideFile_InputMessage">
     <wsdl:part name="parameters" element="tns:UnprovideFile" />
@@ -73,6 +79,12 @@
   </wsdl:message>
   <wsdl:message name="IFileService_UnprovideFileForAll_OutputMessage">
     <wsdl:part name="parameters" element="tns:UnprovideFileForAllResponse" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_StartUnprovideFileForAll_InputMessage">
+    <wsdl:part name="parameters" element="tns:StartUnprovideFileForAll" />
+  </wsdl:message>
+  <wsdl:message name="IFileService_StartUnprovideFileForAll_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StartUnprovideFileForAllResponse" />
   </wsdl:message>
   <wsdl:message name="IFileService_GetProvidedFiles_InputMessage">
     <wsdl:part name="parameters" element="tns:GetProvidedFiles" />
@@ -107,6 +119,10 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFilesPage" message="tns:IFileService_GetFilesPage_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFilesPageResponse" message="tns:IFileService_GetFilesPage_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetFileProperties">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFileProperties" message="tns:IFileService_GetFileProperties_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFilePropertiesResponse" message="tns:IFileService_GetFileProperties_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetDirectories">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectories" message="tns:IFileService_GetDirectories_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesResponse" message="tns:IFileService_GetDirectories_OutputMessage" />
@@ -115,13 +131,13 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesPage" message="tns:IFileService_GetDirectoriesPage_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoriesPageResponse" message="tns:IFileService_GetDirectoriesPage_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="IsFileProvided">
-      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/IsFileProvided" message="tns:IFileService_IsFileProvided_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/IsFileProvidedResponse" message="tns:IFileService_IsFileProvided_OutputMessage" />
+    <wsdl:operation name="GetDirectoryProperties">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetDirectoryProperties" message="tns:IFileService_GetDirectoryProperties_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetDirectoryPropertiesResponse" message="tns:IFileService_GetDirectoryProperties_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="IsProvidingFile">
-      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/IsProvidingFile" message="tns:IFileService_IsProvidingFile_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/IsProvidingFileResponse" message="tns:IFileService_IsProvidingFile_OutputMessage" />
+    <wsdl:operation name="GetFileStates">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFileStates" message="tns:IFileService_GetFileStates_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFileStatesResponse" message="tns:IFileService_GetFileStates_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="StartProvideFile">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/StartProvideFile" message="tns:IFileService_StartProvideFile_InputMessage" />
@@ -131,9 +147,9 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/ProvideFile" message="tns:IFileService_ProvideFile_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/ProvideFileResponse" message="tns:IFileService_ProvideFile_OutputMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetFileId">
-      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetFileId" message="tns:IFileService_GetFileId_InputMessage" />
-      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/GetFileIdResponse" message="tns:IFileService_GetFileId_OutputMessage" />
+    <wsdl:operation name="StartUnprovideFile">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/StartUnprovideFile" message="tns:IFileService_StartUnprovideFile_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/StartUnprovideFileResponse" message="tns:IFileService_StartUnprovideFile_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="UnprovideFile">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/UnprovideFile" message="tns:IFileService_UnprovideFile_InputMessage" />
@@ -142,6 +158,10 @@
     <wsdl:operation name="UnprovideFileForAll">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/UnprovideFileForAll" message="tns:IFileService_UnprovideFileForAll_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IFileService/UnprovideFileForAllResponse" message="tns:IFileService_UnprovideFileForAll_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="StartUnprovideFileForAll">
+      <wsdl:input wsaw:Action="http://tempuri.org/IFileService/StartUnprovideFileForAll" message="tns:IFileService_StartUnprovideFileForAll_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IFileService/StartUnprovideFileForAllResponse" message="tns:IFileService_StartUnprovideFileForAll_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetProvidedFiles">
       <wsdl:input wsaw:Action="http://tempuri.org/IFileService/GetProvidedFiles" message="tns:IFileService_GetProvidedFiles_InputMessage" />
@@ -180,6 +200,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetFileProperties">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetFileProperties" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetDirectories">
       <soap:operation soapAction="http://tempuri.org/IFileService/GetDirectories" style="document" />
       <wsdl:input>
@@ -198,8 +227,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="IsFileProvided">
-      <soap:operation soapAction="http://tempuri.org/IFileService/IsFileProvided" style="document" />
+    <wsdl:operation name="GetDirectoryProperties">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetDirectoryProperties" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -207,8 +236,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="IsProvidingFile">
-      <soap:operation soapAction="http://tempuri.org/IFileService/IsProvidingFile" style="document" />
+    <wsdl:operation name="GetFileStates">
+      <soap:operation soapAction="http://tempuri.org/IFileService/GetFileStates" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -234,8 +263,8 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetFileId">
-      <soap:operation soapAction="http://tempuri.org/IFileService/GetFileId" style="document" />
+    <wsdl:operation name="StartUnprovideFile">
+      <soap:operation soapAction="http://tempuri.org/IFileService/StartUnprovideFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -254,6 +283,15 @@
     </wsdl:operation>
     <wsdl:operation name="UnprovideFileForAll">
       <soap:operation soapAction="http://tempuri.org/IFileService/UnprovideFileForAll" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="StartUnprovideFileForAll">
+      <soap:operation soapAction="http://tempuri.org/IFileService/StartUnprovideFileForAll" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

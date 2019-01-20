@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NetworkVideoPlayerBackend
+namespace NetworkFilePlayerBackend
 {
     public class FileProvide
     {
@@ -45,6 +45,8 @@ namespace NetworkVideoPlayerBackend
 
         public int UserCount { get; private set; }
 
+        public FileStates States { get { return new FileStates(IsProvidingFile, IsFileProvided, UserCount, ID, SrcPath); } }
+
         private FileProvide(string path)
         {
             ioLockObj = new object();
@@ -60,34 +62,12 @@ namespace NetworkVideoPlayerBackend
             {
                 UserCount++;
 
-                if (IsFileProvided) return;
+                if (UserCount > 1) return;
 
-                Provide();
-            }
-        }
+                IsProvidingFile = true;
 
-        public void StartProvideOne()
-        {
-            lock (ioLockObj)
-            {
-                UserCount++;
+                File.Copy(SrcPath, GetIdPath());
 
-                if (IsFileProvided) return;
-
-                if (string.IsNullOrWhiteSpace(ID)) ID = GetID(Path.GetExtension(SrcPath));
-
-                Task.Run(new Action(Provide));
-            }
-        }
-
-        private void Provide()
-        {
-            lock (ioLockObj) IsProvidingFile = true;
-
-            File.Copy(SrcPath, GetIdPath());
-
-            lock (ioLockObj)
-            {
                 IsFileProvided = true;
                 IsProvidingFile = false;
             }
@@ -145,7 +125,7 @@ namespace NetworkVideoPlayerBackend
                 if (UserCount == 0) return;
 
                 UserCount = 0;
-                IsFileProvided = false;
+                IsFileProvided = IsProvidingFile = false;
                 File.Delete(GetIdPath());
             }
         }

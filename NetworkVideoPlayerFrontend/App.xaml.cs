@@ -5,6 +5,7 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -21,8 +22,11 @@ namespace NetworkVideoPlayerFrontend
         private const string serviceName = "FileService.svc";
 
         private List<string> providedFiles;
+        private FileServiceClient service;
 
-        public FileServiceClient Service { get; private set; }
+        public StorageFile ApplicationStateFile { get; private set; }
+
+        public ApplicationState State { get; private set; }
 
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt. Dies ist die erste Zeile von erstelltem Code
@@ -41,11 +45,9 @@ namespace NetworkVideoPlayerFrontend
         {
             Debug.WriteLine("App_OnResume1");
 
-            Service = CreateService();
-
             try
             {
-                await Service.OpenAsync();
+                await GetService().OpenAsync();
             }
             catch (Exception exc)
             {
@@ -56,12 +58,21 @@ namespace NetworkVideoPlayerFrontend
             {
                 foreach (string file in providedFiles)
                 {
-                    await Service.ProvideFileAsync(file);
+                    await GetService().ProvideFileAsync(file);
                 }
             }
             catch (Exception exc)
             {
                 Debug.WriteLine("App_OnResumeFail2: " + exc);
+            }
+
+            try
+            {
+                if (ApplicationStateFile == null) await SetApplicationStateFile();
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine("App_ResumeFail3: " + exc);
             }
 
             Debug.WriteLine("App_OnResume2");
@@ -74,9 +85,17 @@ namespace NetworkVideoPlayerFrontend
         /// <param name="e">Details über Startanforderung und -prozess.</param>
         protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Service = CreateService();
+            await GetService().OpenAsync();
 
-            await Service.OpenAsync();
+            try
+            {
+                await SetApplicationStateFile();
+                State = await ApplicationState.Load(ApplicationStateFile);
+            }
+            catch
+            {
+                State = new ApplicationState();
+            }
 
             Debug.Clear();
 
@@ -96,6 +115,8 @@ namespace NetworkVideoPlayerFrontend
                     //TODO: Zustand von zuvor angehaltener Anwendung laden
                 }
 
+                if (string.IsNullOrWhiteSpace(State.VideoPath)) State = new ApplicationState();
+
                 // Den Frame im aktuellen Fenster platzieren
                 Window.Current.Content = rootFrame;
             }
@@ -104,7 +125,7 @@ namespace NetworkVideoPlayerFrontend
             {
                 if (rootFrame.Content == null)
                 {
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(MainPage), State);
                 }
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist
                 Window.Current.Activate();
@@ -121,6 +142,28 @@ namespace NetworkVideoPlayerFrontend
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
 
+        private async Task SetApplicationStateFile()
+        {
+            try
+            {
+                ApplicationStateFile = await ApplicationData.Current.LocalFolder.GetFileAsync("State.txt");
+                return;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("AppSetApplicationStateFileFail: " + e);
+            }
+
+            try
+            {
+                ApplicationStateFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("State.txt");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("AppSetApplicationStateFileFai2: " + e);
+            }
+        }
+
         /// <summary>
         /// Wird aufgerufen, wenn die Ausführung der Anwendung angehalten wird.  Der Anwendungszustand wird gespeichert,
         /// ohne zu wissen, ob die Anwendung beendet oder fortgesetzt wird und die Speicherinhalte dabei
@@ -134,58 +177,43 @@ namespace NetworkVideoPlayerFrontend
 
             foreach (string file in providedFiles)
             {
-                await Service.UnprovideFileAsync(file);
+                await GetService().UnprovideFileAsync(file);
             }
 
-            await Service?.CloseAsync();
+            await service?.CloseAsync();
 
             deferral.Complete();
         }
 
+        public FileServiceClient GetService()
+        {
+            if (service == null || (service.State != CommunicationState.Opened &&
+                service.State != CommunicationState.Opening)) service = CreateService();
+
+            return service;
+        }
+
         private FileServiceClient CreateService()
         {
-            //service = new FileServiceClient();
-            //ServerAddress = service.Endpoint.Address.Uri.AbsoluteUri.Remove(22);
+            FileServiceClient service = new FileServiceClient();
+            ServerAddress = service.Endpoint.Address.Uri.AbsoluteUri.Remove(22);
 
-            BasicHttpBinding binding = new BasicHttpBinding();
-            Uri endpointUri = new Uri(ServerAddress + serviceName);
-            EndpointAddress endpoint = new EndpointAddress(endpointUri);
+            return service;
 
-            return new FileServiceClient(binding, endpoint);
+            //BasicHttpBinding binding = new BasicHttpBinding();
+            //Uri endpointUri = new Uri(ServerAddress + serviceName);
+            //EndpointAddress endpoint = new EndpointAddress(endpointUri);
+
+            //return new FileServiceClient(binding, endpoint);
         }
 
         public async Task<string> ProvideFileAsync(string path)
         {
-            //switch (Service.State)
-            //{
-            //    case CommunicationState.Closed:
-            //        await Service.OpenAsync();
-            //        break;
-
-            //    case CommunicationState.Closing:
-            //        while (Service.State == CommunicationState.Closing) await Task.Delay(100);
-            //        await Service.OpenAsync();
-            //        break;
-
-            //    case CommunicationState.Created:
-            //        await Service.OpenAsync();
-            //        break;
-
-            //    case CommunicationState.Faulted:
-            //        await Service.CloseAsync();
-            //        await Service.OpenAsync();
-            //        break;
-
-            //    case CommunicationState.Opening:
-            //        while (Service.State == CommunicationState.Opening) await Task.Delay(100);
-            //        break;
-            //}
-
             providedFiles.Add(path);
 
-            string id = await Service.StartProvideFileAsync(path);
+            string id = await GetService().StartProvideFileAsync(path);
 
-            while (!await Service.IsFileProvidedAsync(path))
+            while (!(await GetService().GetFileStatesAsync(path)).IsFileProvided)
             {
                 await Task.Delay(waitTimeSpan);
             }
@@ -196,7 +224,7 @@ namespace NetworkVideoPlayerFrontend
         public async Task UnprovideFileAsync(string path)
         {
             providedFiles.Remove(path);
-            await Service.UnprovideFileAsync(path);
+            await GetService().UnprovideFileAsync(path);
         }
     }
 }

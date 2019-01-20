@@ -119,6 +119,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ApplicationState.cs" />
     <Compile Include="Connected Services\VideoServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -154,7 +155,13 @@
     <None Include="Connected Services\VideoServiceReference\FileService3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\VideoServiceReference\NetworkVideoPlayerFrontend.VideoServiceReference.ValueTupleOfstringstringint.datasource">
+    <None Include="Connected Services\VideoServiceReference\NetworkVideoPlayerFrontend.VideoServiceReference.DirectoryProperties.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\VideoServiceReference\NetworkVideoPlayerFrontend.VideoServiceReference.FileProperties.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\VideoServiceReference\NetworkVideoPlayerFrontend.VideoServiceReference.FileStates.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="NetworkVideoPlayerFrontend_TemporaryKey.pfx" />

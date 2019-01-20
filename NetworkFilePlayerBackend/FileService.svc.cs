@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace NetworkVideoPlayerBackend
+namespace NetworkFilePlayerBackend
 {
     public class FileService : IFileService
     {
@@ -38,6 +40,19 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
+        public FileProperties GetFileProperties(string path)
+        {
+            try
+            {
+                return new FileProperties(path);
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
+        }
+
         public string[] GetDirectories(string path)
         {
             try
@@ -64,11 +79,11 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public bool IsFileProvided(string path)
+        public DirectoryProperties GetDirectoryProperties(string path)
         {
             try
             {
-                return FileProvide.GetInstance(path).IsFileProvided;
+                return new DirectoryProperties(path);
             }
             catch (Exception e)
             {
@@ -77,11 +92,11 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public bool IsProvidingFile(string path)
+        public FileStates GetFileStates(string path)
         {
             try
             {
-                return FileProvide.GetInstance(path).IsProvidingFile;
+                return FileProvide.GetInstance(path).States;
             }
             catch (Exception e)
             {
@@ -95,7 +110,7 @@ namespace NetworkVideoPlayerBackend
             try
             {
                 FileProvide file = FileProvide.GetInstance(path);
-                file.StartProvideOne();
+                Task.Run(new Action(file.ProvideOne));
 
                 return file.ID;
             }
@@ -149,6 +164,20 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
+        public void StartUnprovideFile(string path)
+        {
+            try
+            {
+                FileProvide file = FileProvide.GetInstance(path);
+                Task.Run(new Action(file.UnprovideOne));
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
+        }
+
         public void UnprovideFileForAll(string path)
         {
             try
@@ -163,11 +192,12 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public (string files, string id, int count)[] GetProvidedFiles()
+        public void StartUnprovideFileForAll(string path)
         {
             try
             {
-                return FileProvide.GetProvidedFiles().Select(p => (p.SrcPath, p.ID, p.UserCount)).ToArray();
+                FileProvide file = FileProvide.GetInstance(path);
+                Task.Run(new Action(file.Unprovide));
             }
             catch (Exception e)
             {
@@ -176,12 +206,25 @@ namespace NetworkVideoPlayerBackend
             }
         }
 
-        public (string files, string id, int count)[] GetProvidedFilesPage(int pageSize, int pageIndex)
+        public FileStates[] GetProvidedFiles()
+        {
+            try
+            {
+                return FileProvide.GetProvidedFiles().Select(p => p.States).ToArray();
+            }
+            catch (Exception e)
+            {
+                Log(e.ToString());
+                throw;
+            }
+        }
+
+        public FileStates[] GetProvidedFilesPage(int pageSize, int pageIndex)
         {
             try
             {
                 IEnumerable<FileProvide> files = FileProvide.GetProvidedFiles().Skip(pageSize * pageIndex).Take(pageSize);
-                return files.Select(p => (p.SrcPath, p.ID, p.UserCount)).ToArray();
+                return files.Select(p => p.States).ToArray();
             }
             catch (Exception e)
             {
