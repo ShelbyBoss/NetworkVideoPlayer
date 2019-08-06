@@ -27,6 +27,9 @@ namespace NetworkFilePlayerBackend
         FileStates GetFileStates(string path);
 
         [OperationContract]
+        byte[] GetMD5FileHash(string path);
+
+        [OperationContract]
         string StartProvideFile(string path);
 
         [OperationContract]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace NetworkFilePlayerBackend
@@ -102,6 +103,17 @@ namespace NetworkFilePlayerBackend
             {
                 Log(e.ToString());
                 throw;
+            }
+        }
+
+        public byte[] GetMD5FileHash(string path)
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                using (FileStream stream = File.OpenRead(path))
+                {
+                    return md5.ComputeHash(stream);
+                }
             }
         }
 
